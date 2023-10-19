@@ -1,0 +1,760 @@
+2023-10-12 22:07:56,616: url_checker: [Line: 169]: ERROR: Unable to update Check Result Table: 'NoneType' object is not subscriptable
+2023-10-12 22:07:56,619: url_checker: [Line: 170]: ERROR: Exception occurred:
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+2023-10-12 23:12:24,840: url_checker: [Line: 169]: ERROR: Unable to update Check Result Table: 'NoneType' object is not subscriptable
+2023-10-12 23:12:24,842: url_checker: [Line: 170]: ERROR: Exception occurred:
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+2023-10-13 00:56:48,993: url_checker: [Line: 169]: ERROR: https:/google.it
+2023-10-13 00:56:48,994: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-13 23:52:38,042: url_checker: [Line: 169]: ERROR: Unable to update Check Result Table: 'NoneType' object is not subscriptable
+2023-10-13 23:52:38,047: url_checker: [Line: 170]: ERROR: Exception occurred:
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+2023-10-15 03:12:08,151: url_checker: [Line: 169]: ERROR: 
+2023-10-15 03:12:08,152: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-15 15:27:49,453: url_checker: [Line: 169]: ERROR: Unable to update Check Result Table: 'NoneType' object is not subscriptable
+2023-10-15 15:27:49,457: url_checker: [Line: 170]: ERROR: Exception occurred:
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+2023-10-15 16:44:36,495: url_checker: [Line: 169]: ERROR: Unable to update Check Result Table: 'NoneType' object is not subscriptable
+2023-10-15 16:44:36,499: url_checker: [Line: 170]: ERROR: Exception occurred:
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+2023-10-17 00:08:00,327: url_checker: [Line: 169]: ERROR: Unable to update Check Result Table: 'NoneType' object is not subscriptable
+2023-10-17 00:08:00,330: url_checker: [Line: 170]: ERROR: Exception occurred:
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/cristiano/PycharmProjects/Python&EthicalHaching/SQLWasp/SQLWasp/url_checker.py", line 411, in update_check_result_table
+    message = f"| {self.status_record[1]} | {self.url} | {self.status_record[2]} | {self.status_record[3]} | \n"
+                   ~~~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+2023-10-19 02:01:57,807: url_checker: [Line: 169]: ERROR: h
+2023-10-19 02:01:57,808: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,808: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:01:57,808: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,808: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:01:57,809: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,809: url_checker: [Line: 169]: ERROR: p
+2023-10-19 02:01:57,809: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,809: url_checker: [Line: 169]: ERROR: s
+2023-10-19 02:01:57,810: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,810: url_checker: [Line: 169]: ERROR: :
+2023-10-19 02:01:57,810: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,810: url_checker: [Line: 169]: ERROR: /
+2023-10-19 02:01:57,810: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,811: url_checker: [Line: 169]: ERROR: /
+2023-10-19 02:01:57,811: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,811: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,811: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,812: url_checker: [Line: 169]: ERROR: a
+2023-10-19 02:01:57,812: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,812: url_checker: [Line: 169]: ERROR: a
+2023-10-19 02:01:57,812: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,812: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,812: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,813: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,813: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,813: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,813: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,813: url_checker: [Line: 169]: ERROR: 2
+2023-10-19 02:01:57,814: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,814: url_checker: [Line: 169]: ERROR: e
+2023-10-19 02:01:57,814: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,814: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,814: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,814: url_checker: [Line: 169]: ERROR: 4
+2023-10-19 02:01:57,815: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,815: url_checker: [Line: 169]: ERROR: c
+2023-10-19 02:01:57,815: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,815: url_checker: [Line: 169]: ERROR: 5
+2023-10-19 02:01:57,815: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,816: url_checker: [Line: 169]: ERROR: f
+2023-10-19 02:01:57,816: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,816: url_checker: [Line: 169]: ERROR: b
+2023-10-19 02:01:57,816: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,816: url_checker: [Line: 169]: ERROR: 2
+2023-10-19 02:01:57,816: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,817: url_checker: [Line: 169]: ERROR: 6
+2023-10-19 02:01:57,817: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,817: url_checker: [Line: 169]: ERROR: 8
+2023-10-19 02:01:57,817: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,817: url_checker: [Line: 169]: ERROR: 3
+2023-10-19 02:01:57,817: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,818: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,818: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,818: url_checker: [Line: 169]: ERROR: 9
+2023-10-19 02:01:57,818: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,818: url_checker: [Line: 169]: ERROR: d
+2023-10-19 02:01:57,819: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,819: url_checker: [Line: 169]: ERROR: 2
+2023-10-19 02:01:57,819: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,819: url_checker: [Line: 169]: ERROR: 6
+2023-10-19 02:01:57,819: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,819: url_checker: [Line: 169]: ERROR: 6
+2023-10-19 02:01:57,820: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,820: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,820: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,820: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,820: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,821: url_checker: [Line: 169]: ERROR: 7
+2023-10-19 02:01:57,821: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,821: url_checker: [Line: 169]: ERROR: 7
+2023-10-19 02:01:57,821: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,822: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,822: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,822: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,822: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,822: url_checker: [Line: 169]: ERROR: 5
+2023-10-19 02:01:57,822: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,823: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:01:57,823: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,823: url_checker: [Line: 169]: ERROR: .
+2023-10-19 02:01:57,823: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,823: url_checker: [Line: 169]: ERROR: w
+2023-10-19 02:01:57,823: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,824: url_checker: [Line: 169]: ERROR: e
+2023-10-19 02:01:57,824: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,824: url_checker: [Line: 169]: ERROR: b
+2023-10-19 02:01:57,824: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,824: url_checker: [Line: 169]: ERROR: -
+2023-10-19 02:01:57,825: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,825: url_checker: [Line: 169]: ERROR: s
+2023-10-19 02:01:57,825: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,825: url_checker: [Line: 169]: ERROR: e
+2023-10-19 02:01:57,825: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,825: url_checker: [Line: 169]: ERROR: c
+2023-10-19 02:01:57,826: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,826: url_checker: [Line: 169]: ERROR: u
+2023-10-19 02:01:57,826: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,826: url_checker: [Line: 169]: ERROR: r
+2023-10-19 02:01:57,826: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,827: url_checker: [Line: 169]: ERROR: i
+2023-10-19 02:01:57,827: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,827: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:01:57,827: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,827: url_checker: [Line: 169]: ERROR: y
+2023-10-19 02:01:57,827: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,828: url_checker: [Line: 169]: ERROR: -
+2023-10-19 02:01:57,828: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,828: url_checker: [Line: 169]: ERROR: a
+2023-10-19 02:01:57,828: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,828: url_checker: [Line: 169]: ERROR: c
+2023-10-19 02:01:57,828: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,829: url_checker: [Line: 169]: ERROR: a
+2023-10-19 02:01:57,829: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,829: url_checker: [Line: 169]: ERROR: d
+2023-10-19 02:01:57,829: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,829: url_checker: [Line: 169]: ERROR: e
+2023-10-19 02:01:57,829: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,830: url_checker: [Line: 169]: ERROR: m
+2023-10-19 02:01:57,830: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,830: url_checker: [Line: 169]: ERROR: y
+2023-10-19 02:01:57,830: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,830: url_checker: [Line: 169]: ERROR: .
+2023-10-19 02:01:57,830: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,831: url_checker: [Line: 169]: ERROR: n
+2023-10-19 02:01:57,831: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,831: url_checker: [Line: 169]: ERROR: e
+2023-10-19 02:01:57,831: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,832: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:01:57,832: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,832: url_checker: [Line: 169]: ERROR: /
+2023-10-19 02:01:57,832: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,832: url_checker: [Line: 169]: ERROR: p
+2023-10-19 02:01:57,832: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,833: url_checker: [Line: 169]: ERROR: r
+2023-10-19 02:01:57,833: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,833: url_checker: [Line: 169]: ERROR: o
+2023-10-19 02:01:57,833: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,833: url_checker: [Line: 169]: ERROR: d
+2023-10-19 02:01:57,833: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,834: url_checker: [Line: 169]: ERROR: u
+2023-10-19 02:01:57,834: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,834: url_checker: [Line: 169]: ERROR: c
+2023-10-19 02:01:57,834: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,834: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:01:57,834: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,835: url_checker: [Line: 169]: ERROR: ?
+2023-10-19 02:01:57,835: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,835: url_checker: [Line: 169]: ERROR: p
+2023-10-19 02:01:57,835: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,835: url_checker: [Line: 169]: ERROR: r
+2023-10-19 02:01:57,835: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,836: url_checker: [Line: 169]: ERROR: o
+2023-10-19 02:01:57,836: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,836: url_checker: [Line: 169]: ERROR: d
+2023-10-19 02:01:57,836: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,836: url_checker: [Line: 169]: ERROR: u
+2023-10-19 02:01:57,837: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,837: url_checker: [Line: 169]: ERROR: c
+2023-10-19 02:01:57,837: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,837: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:01:57,837: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,838: url_checker: [Line: 169]: ERROR: I
+2023-10-19 02:01:57,838: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,838: url_checker: [Line: 169]: ERROR: d
+2023-10-19 02:01:57,838: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,838: url_checker: [Line: 169]: ERROR: =
+2023-10-19 02:01:57,838: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:01:57,839: url_checker: [Line: 169]: ERROR: 1
+2023-10-19 02:01:57,839: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,685: url_checker: [Line: 169]: ERROR: h
+2023-10-19 02:02:56,685: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,685: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:02:56,686: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,686: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:02:56,686: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,686: url_checker: [Line: 169]: ERROR: p
+2023-10-19 02:02:56,686: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,687: url_checker: [Line: 169]: ERROR: s
+2023-10-19 02:02:56,687: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,687: url_checker: [Line: 169]: ERROR: :
+2023-10-19 02:02:56,687: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,687: url_checker: [Line: 169]: ERROR: /
+2023-10-19 02:02:56,688: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,688: url_checker: [Line: 169]: ERROR: /
+2023-10-19 02:02:56,688: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,688: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,688: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,689: url_checker: [Line: 169]: ERROR: a
+2023-10-19 02:02:56,689: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,689: url_checker: [Line: 169]: ERROR: a
+2023-10-19 02:02:56,689: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,689: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,689: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,690: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,690: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,690: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,690: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,690: url_checker: [Line: 169]: ERROR: 2
+2023-10-19 02:02:56,691: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,691: url_checker: [Line: 169]: ERROR: e
+2023-10-19 02:02:56,691: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,691: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,691: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,692: url_checker: [Line: 169]: ERROR: 4
+2023-10-19 02:02:56,692: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,692: url_checker: [Line: 169]: ERROR: c
+2023-10-19 02:02:56,692: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,692: url_checker: [Line: 169]: ERROR: 5
+2023-10-19 02:02:56,692: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,693: url_checker: [Line: 169]: ERROR: f
+2023-10-19 02:02:56,693: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,693: url_checker: [Line: 169]: ERROR: b
+2023-10-19 02:02:56,693: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,693: url_checker: [Line: 169]: ERROR: 2
+2023-10-19 02:02:56,693: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,694: url_checker: [Line: 169]: ERROR: 6
+2023-10-19 02:02:56,694: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,694: url_checker: [Line: 169]: ERROR: 8
+2023-10-19 02:02:56,694: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,694: url_checker: [Line: 169]: ERROR: 3
+2023-10-19 02:02:56,695: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,695: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,695: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,695: url_checker: [Line: 169]: ERROR: 9
+2023-10-19 02:02:56,695: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,696: url_checker: [Line: 169]: ERROR: d
+2023-10-19 02:02:56,696: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,696: url_checker: [Line: 169]: ERROR: 2
+2023-10-19 02:02:56,696: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,696: url_checker: [Line: 169]: ERROR: 6
+2023-10-19 02:02:56,696: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,697: url_checker: [Line: 169]: ERROR: 6
+2023-10-19 02:02:56,697: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,697: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,697: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,698: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,698: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,698: url_checker: [Line: 169]: ERROR: 7
+2023-10-19 02:02:56,698: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,698: url_checker: [Line: 169]: ERROR: 7
+2023-10-19 02:02:56,698: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,699: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,699: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,699: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,699: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,699: url_checker: [Line: 169]: ERROR: 5
+2023-10-19 02:02:56,699: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,700: url_checker: [Line: 169]: ERROR: 0
+2023-10-19 02:02:56,700: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,700: url_checker: [Line: 169]: ERROR: .
+2023-10-19 02:02:56,700: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,700: url_checker: [Line: 169]: ERROR: w
+2023-10-19 02:02:56,701: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,701: url_checker: [Line: 169]: ERROR: e
+2023-10-19 02:02:56,701: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,701: url_checker: [Line: 169]: ERROR: b
+2023-10-19 02:02:56,701: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,702: url_checker: [Line: 169]: ERROR: -
+2023-10-19 02:02:56,702: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,702: url_checker: [Line: 169]: ERROR: s
+2023-10-19 02:02:56,702: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,702: url_checker: [Line: 169]: ERROR: e
+2023-10-19 02:02:56,702: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,703: url_checker: [Line: 169]: ERROR: c
+2023-10-19 02:02:56,703: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,703: url_checker: [Line: 169]: ERROR: u
+2023-10-19 02:02:56,703: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,703: url_checker: [Line: 169]: ERROR: r
+2023-10-19 02:02:56,703: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,704: url_checker: [Line: 169]: ERROR: i
+2023-10-19 02:02:56,704: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,704: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:02:56,704: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,704: url_checker: [Line: 169]: ERROR: y
+2023-10-19 02:02:56,705: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,705: url_checker: [Line: 169]: ERROR: -
+2023-10-19 02:02:56,705: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,705: url_checker: [Line: 169]: ERROR: a
+2023-10-19 02:02:56,705: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,706: url_checker: [Line: 169]: ERROR: c
+2023-10-19 02:02:56,706: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,706: url_checker: [Line: 169]: ERROR: a
+2023-10-19 02:02:56,706: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,706: url_checker: [Line: 169]: ERROR: d
+2023-10-19 02:02:56,706: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,707: url_checker: [Line: 169]: ERROR: e
+2023-10-19 02:02:56,707: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,707: url_checker: [Line: 169]: ERROR: m
+2023-10-19 02:02:56,707: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,707: url_checker: [Line: 169]: ERROR: y
+2023-10-19 02:02:56,707: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,708: url_checker: [Line: 169]: ERROR: .
+2023-10-19 02:02:56,708: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,708: url_checker: [Line: 169]: ERROR: n
+2023-10-19 02:02:56,708: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,708: url_checker: [Line: 169]: ERROR: e
+2023-10-19 02:02:56,708: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,709: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:02:56,709: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,709: url_checker: [Line: 169]: ERROR: /
+2023-10-19 02:02:56,709: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,710: url_checker: [Line: 169]: ERROR: p
+2023-10-19 02:02:56,710: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,710: url_checker: [Line: 169]: ERROR: r
+2023-10-19 02:02:56,710: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,711: url_checker: [Line: 169]: ERROR: o
+2023-10-19 02:02:56,711: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,711: url_checker: [Line: 169]: ERROR: d
+2023-10-19 02:02:56,711: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,712: url_checker: [Line: 169]: ERROR: u
+2023-10-19 02:02:56,712: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,712: url_checker: [Line: 169]: ERROR: c
+2023-10-19 02:02:56,712: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,712: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:02:56,712: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,713: url_checker: [Line: 169]: ERROR: ?
+2023-10-19 02:02:56,713: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,713: url_checker: [Line: 169]: ERROR: p
+2023-10-19 02:02:56,713: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,713: url_checker: [Line: 169]: ERROR: r
+2023-10-19 02:02:56,714: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,714: url_checker: [Line: 169]: ERROR: o
+2023-10-19 02:02:56,714: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,714: url_checker: [Line: 169]: ERROR: d
+2023-10-19 02:02:56,714: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,715: url_checker: [Line: 169]: ERROR: u
+2023-10-19 02:02:56,715: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,715: url_checker: [Line: 169]: ERROR: c
+2023-10-19 02:02:56,715: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,715: url_checker: [Line: 169]: ERROR: t
+2023-10-19 02:02:56,716: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,716: url_checker: [Line: 169]: ERROR: I
+2023-10-19 02:02:56,716: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,716: url_checker: [Line: 169]: ERROR: d
+2023-10-19 02:02:56,716: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,717: url_checker: [Line: 169]: ERROR: =
+2023-10-19 02:02:56,717: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
+2023-10-19 02:02:56,717: url_checker: [Line: 169]: ERROR: 1
+2023-10-19 02:02:56,717: url_checker: [Line: 170]: ERROR: Exception occurred:
+NoneType: None
+NoneType: None
