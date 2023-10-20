@@ -227,7 +227,7 @@ class CookieInjector:
             requests_sent_time = time.time()
             self.get_crafted_request_response()
             response_arrived_time = time.time()
-            self.get_request_response_time = response_arrived_time -requests_sent_time
+            self.get_request_response_time = response_arrived_time - requests_sent_time
             # return self.get_crafted_request_response()
         except CookieInjectorGetResponseError as e:
             error_message = f"Request error: {e}."

@@ -3,7 +3,9 @@
 """
 This module contains the CookieVulnScanner class.
 """
+import functools
 import sys
+import time
 from typing import Union
 
 import click
@@ -26,6 +28,19 @@ URL = "https://0a9600c5038042d68007591500a30039.web-security-academy.net/product
 # FALSE_STATEMENT = """' anD 2 = 1--"""
 # BOOL_STATEMENTS = [TRUE_STATEMENT, FALSE_STATEMENT]
 
+def timer(func):
+    @functools.wraps(func)
+    def wrapper_timer(*args, **kwargs):
+        start_time = time.time()
+        c.print(f"Start: {start_time}")
+        value = func(*args, **kwargs)
+        end_time = time.time()
+        c.print(f"End time: {end_time}")
+        elapsed_time = end_time - start_time
+        c.print(f"Time elapsed: {elapsed_time}.")
+        return value
+
+    return wrapper_timer
 
 class CookieVulnScanner:
     """
@@ -182,6 +197,16 @@ class CookieVulnScanner:
                 # self.response_list = []
         return self.responses_difference
 
+    @timer
+    def _inject_time_based(self, statement: str, response_list: list) -> float:
+        self._run_injector(statement, response_list)
+        time_elapsed: float = self.injector.get_request_response_time
+        self.c.print(
+            f"Cookie '{self.cookie_name}': "
+            f"Time elapsed for statement `{statement}`: {time_elapsed}"
+        )
+        return time_elapsed
+
     def test_time_based(self):
         self.c.print(Markdown(f"#  Processing Cookies"))
         payload = self.generate_payload(time_based=True)
@@ -189,11 +214,9 @@ class CookieVulnScanner:
             response_list = []
             for pair in payload:
                 for statement in pair:
-                    self._run_injector(statement, response_list)
-                    self.c.print(
-                        f"Cookie '{self.cookie_name}': "
-                        f"Time elapsed for statement '{statement}': {self.injector.get_request_response_time:.4f}"
-                    )
+                    time_elapsed = self._inject_time_based(statement, response_list)
+                    if time_elapsed > 10:
+                        self.c.print(Markdown(f"* Time elapsed > 5: {time_elapsed}"), style="orange_red1")
 
 
 @click.command(
@@ -206,7 +229,7 @@ class CookieVulnScanner:
 @click.argument(
     "url",
     required=True,
-    default=URL,
+    # default=URL,
     nargs=1,
     metavar="URL",
     type=str,

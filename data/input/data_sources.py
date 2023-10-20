@@ -397,6 +397,15 @@ cookies_display_tab = """
 | :-------------: | :--------------: | :-----: |
 """
 
+standard_deviation_tab = """
+| **Max Value** | **Min Value** | **Standard Deviation** | **Current Deviation Threshold Value** |
+| :-----------: | :-----------: | :--------------------: | :-----------------------------------: |
+"""
+response_latency_status_tab = """
+| **Average Response Time** | **Current Threshold Value** |
+| :-----------------------: | :-------------------------: |
+"""
+
 urls_to_check = [
     "https://yahoo.com",
     "https://kamapuaa.it",

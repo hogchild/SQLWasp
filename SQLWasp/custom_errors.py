@@ -17,26 +17,11 @@ class InvalidInputListError(Exception):
         super().__init__(message)
 
 
-class HTTP5xxResponseException(Exception):
-    def __init__(self, message="5xx (Server Errors). Server may have internal issues."):
+class CheckLatencyConsistencyError(Exception):
+    def __init__(self, message="Error checking latency consistency."):
         super().__init__(message)
 
 
-class HTTP4xxResponseException(Exception):
-    def __init__(self, message="4xx (Client Errors). Server is running but unable to process the request."):
-        super().__init__(message)
-
-
-class HTTP3xxResponseException(Exception):
-    def __init__(self, message="3xx (Redirection). Server is running and redirected the request."):
-        super().__init__(message)
-
-
-class HTTP2xxResponseException(Exception):
-    def __init__(self, message="2xx (Successful). The server successfully handled the request."):
-        super().__init__(message)
-
-
-class HTTP1xxResponseException(Exception):
-    def __init__(self, message="1xx (Informational). Server is apparently running."):
+class AssessURLRequestError(Exception):
+    def __init__(self, message="Request error assessing URL."):
         super().__init__(message)
