@@ -7,18 +7,21 @@ send get requests to a given URL and appends the results in a list, which will l
 various calculations (based on the response times to the requests), to determine the quality of the
 communication with the web app.
 """
+
 import functools
 import statistics
 import sys
 import time
-# from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from fractions import Fraction
 
 import click
+import markdown_it
 import requests
 from rich.console import Console
 from rich.markdown import Markdown
+from rich.table import Table
 
 from SQLWasp.custom_errors import CheckLatencyConsistencyError, AssessURLRequestError
 from data.input.data_sources import standard_deviation_tab, response_latency_status_tab
@@ -51,6 +54,7 @@ class AssessLatency:
         self.verbose = verbose
         self.result_tab = standard_deviation_tab
         self.response_latency_status_tab = response_latency_status_tab
+        self.futures = []
         self.url = url
         self.accuracy = accuracy
         self.threshold = threshold
@@ -63,6 +67,22 @@ class AssessLatency:
         self.std_deviation = 0.0
         self.latency_average = 0.0
         self.test_passed = False
+
+    def generate_report(self):
+        final_table = Table(title="Final Table")
+        final_table.add_column(header="Data", style="bold")
+        final_table.add_column(header="Value", style="bold")
+        final_table.add_row("Number of Requests Sent", str(self.accuracy))
+        final_table.add_row("Communication Quality Threshold", str(self.threshold))
+        final_table.add_row("Standard Deviation Threshold", str(self.std_deviation_threshold))
+        final_table.add_row("Latency Average", str(self.latency_average))
+        final_table.add_row("Standard Deviation", str(self.std_deviation))
+        final_table.add_row("Test Passed", str(self.test_passed))
+        self.c.print(final_table)
+        # final_report = (
+        #     f"| **Data** | **Value** | \n"
+        #     f"| :------: | :-------: | \n"
+        # )
 
     def network_test_passed(self) -> bool:
         if self.std_deviation < self.std_deviation_threshold:
@@ -91,7 +111,7 @@ class AssessLatency:
             error_message = f"Unable to test latency consistency: {e}"
             raise CheckLatencyConsistencyError(error_message) from e
         # Set a threshold for what you consider "regular"
-        # threshold = 0.1  # You can adjust this value based on your specific needs
+        # 'self.std_deviation_threshold' = 0.1 (or whatever)  # You can adjust this value based on your specific needs
         # Check if the standard deviation is below the threshold
         if self.std_deviation < self.std_deviation_threshold:
             message = f"[+] The values are relatively consistent."
@@ -155,7 +175,7 @@ class AssessLatency:
         return self.latency_average
 
     @timer
-    def _assess_url(self) -> requests.Response:
+    def _assess_url(self, req_id) -> requests.Response:
         """
         2nd to be called. \n
         It's a helper of the 'self.assess_url()' method.
@@ -169,6 +189,7 @@ class AssessLatency:
             error_message = f"Request failed: {e}"
             raise AssessURLRequestError(error_message) from e
         else:
+            self.c.print(f"Response {req_id}: {self.response}")
             return self.response
 
     def assess_url(self) -> list[dict]:
@@ -181,19 +202,13 @@ class AssessLatency:
         Note: 'self.accuracy' is the number of requests over which the assessment will be taken.
         :return: 'self.responses_list' -> [{"RequestId": requests.Response}]
         """
-        for req_id, scan in enumerate(range(self.accuracy)):
-            # with ThreadPoolExecutor(max_workers=self.accuracy) as executor:
-            #     remaining = self.accuracy
-            #     while remaining:
-            #         print("start")
-            #         future = executor.submit(
-            #             self.responses_list.append,
-            #             {f"RequestId_{req_id}": self._assess_url()},
-            #         )
-            #         remaining -= 1
-            #         print(future.result())
-            self.responses_list.append({f"RequestId_{req_id}": self._assess_url()})
-        return self.responses_list
+        with ThreadPoolExecutor(max_workers=self.accuracy) as executor:
+            for req_id, scan in enumerate(range(self.accuracy)):
+                future = executor.submit(self._assess_url, req_id)
+                self.responses_list.append({f"RequestId_{req_id}": future})
+                self.futures.append(future)
+                self.c.print(f"Sent request {req_id}.")
+            return self.responses_list
 
     def run(self) -> bool:
         """
@@ -202,7 +217,9 @@ class AssessLatency:
         required methods, so for the class to initialize and run.
         :return: None
         """
+        # Send the GET requests using ThreadPoolExecutor
         try:
+
             self.assess_url()
         except AssessURLRequestError as e:
             error_message = f"[-] AssessURL Run Error: {e}"
@@ -216,9 +233,18 @@ class AssessLatency:
             self.close(error_message)
         else:
             self.c.print(self.network_test_passed())
+            self.generate_report()
         return self.test_passed
 
-    def close(self, error_message):
+    def close(self, error_message) -> None:
+        """
+        Closing method. \n
+        It prints the error message passed as an argument,
+        then the advice to check out --help.
+        Finally, exits the program.
+        :param error_message: error message passed in when error raised
+        :return: None. Exit messages & Exit.
+        """
         self.c.print(Markdown(error_message), style="red")
         self.c.print("\n", Markdown("Use --help for more information or read the README.md file."))
         sys.exit(1)
