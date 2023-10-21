@@ -7,7 +7,6 @@ send get requests to a given URL and appends the results in a list, which will l
 various calculations (based on the response times to the requests), to determine the quality of the
 communication with the web app.
 """
-
 import functools
 import statistics
 import sys
@@ -17,7 +16,6 @@ from decimal import Decimal
 from fractions import Fraction
 
 import click
-import markdown_it
 import requests
 from rich.console import Console
 from rich.markdown import Markdown
@@ -49,15 +47,17 @@ def timer(func):
 
 class AssessLatency:
     def __init__(self, url: str, accuracy: int = 7, threshold: float = 0.4,
-                 std_deviation_threshold: float = 0.1, verbose: bool = False) -> None:
+                 std_deviation_threshold: float = 0.1, delay: float = None, verbose: bool = False) -> None:
         self.c = Console()
         self.verbose = verbose
         self.result_tab = standard_deviation_tab
         self.response_latency_status_tab = response_latency_status_tab
         self.futures = []
+        self.future = None
         self.url = url
         self.accuracy = accuracy
         self.threshold = threshold
+        self.delay = delay
         self.bottom_threshold = 0.0
         self.top_threshold = 0.0
         self.std_deviation_threshold = std_deviation_threshold
@@ -67,27 +67,56 @@ class AssessLatency:
         self.std_deviation = 0.0
         self.latency_average = 0.0
         self.test_passed = False
+        self.final_table = None
+        self.status_codes = {}
 
-    def generate_report(self):
-        final_table = Table(title="Final Table")
-        final_table.add_column(header="Data", style="bold")
-        final_table.add_column(header="Value", style="bold")
-        final_table.add_row("Number of Requests Sent", str(self.accuracy))
-        final_table.add_row("Communication Quality Threshold", str(self.threshold))
-        final_table.add_row("Standard Deviation Threshold", str(self.std_deviation_threshold))
-        final_table.add_row("Latency Average", str(self.latency_average))
-        final_table.add_row("Standard Deviation", str(self.std_deviation))
-        final_table.add_row("Test Passed", str(self.test_passed))
-        self.c.print(final_table)
-        # final_report = (
-        #     f"| **Data** | **Value** | \n"
-        #     f"| :------: | :-------: | \n"
-        # )
+    def generate_report(self) -> Table:
+        """
+        7th to be called. \n
+        Creates and returns a table, using the rich library
+        and its 'Table' class. The table contains all the data
+        calculated during runtime.
+        :return: Report Table with all the elaborated data.
+        """
+        self.final_table = Table(title="Final Report Table", title_style="bold")
+        self.final_table.add_column(header="Data", style="bold")
+        self.final_table.add_column(header="Value", style="bold")
+        self.final_table.add_row("Number of Requests Sent", str(self.accuracy), style=None)
+        self.final_table.add_row("Requests Delay", f"{self.delay} secs", style=None)
+        self.final_table.add_row("Communication Quality Threshold", f"{self.threshold} sec")
+        self.final_table.add_row("Standard Deviation Threshold", f"{self.std_deviation_threshold} sec")
+        self.final_table.add_row("Latency Average", f"{self.latency_average} secs")
+        self.final_table.add_row("Standard Deviation", f"{self.std_deviation} secs")
+        for status_code_category, response in self.status_codes.items():
+            self.final_table.add_row(
+                f"Status Code: {status_code_category}",
+                f"Number of Responses: {str(len(self.status_codes.get(status_code_category)))}"
+            )
+        self.final_table.add_row("Test Passed", str(self.test_passed))
+        return self.final_table
 
     def network_test_passed(self) -> bool:
+        """
+        7th to be called. \n
+        This method evaluates the results and returns a bool response.
+        True if, from the elaborated data, the communication with the
+        web application is considered good enough for the intended
+        purpose (in this case Cookie SQL Injection Vulnerability
+        Discovery). Otherwise, it will return False.
+        :return: bool | True: Good Communication | False: Bad Communication
+        with the server.
+        """
         if self.std_deviation < self.std_deviation_threshold:
             if self.bottom_threshold < self.latency_average <= self.top_threshold:
-                self.test_passed = True
+                for k in self.status_codes.keys():
+                    if k == 200:
+                        self.test_passed = True
+                        return self.test_passed
+                    else:
+                        self.test_passed = False
+                        return self.test_passed
+            else:
+                self.test_passed = False
                 return self.test_passed
         else:
             self.test_passed = False
@@ -95,7 +124,7 @@ class AssessLatency:
 
     def check_latency_consistency(self) -> str:
         """
-        5th to be called. \n
+        6th to be called. \n
         It uses the statistics library to calculate the standard deviation,
         which is how much a value gets distant from the average. It may be
         valuable information to understand if the web application's responses
@@ -133,7 +162,7 @@ class AssessLatency:
 
     def get_response_latency_status(self) -> str:
         """
-        4th to be called. \n
+        5th to be called. \n
         It parses top and bottom threshold value from 'self.threshold', which
         represents the delta (+/-), the lowest and the highest values, the
         response time must be within, in order to be considered a normal response
@@ -164,7 +193,7 @@ class AssessLatency:
 
     def process_latency_average(self) -> float | Decimal | Fraction:
         """
-        3rd to be called. \n
+        4th to be called. \n
         It calculates the mean between all the
         time values appended from the '\\@timer' decorator. These are the runtimes
         of the 'self._assess_url' method, essentially the response times to our
@@ -173,6 +202,24 @@ class AssessLatency:
         """
         self.latency_average = statistics.mean(self.latencies_list)
         return self.latency_average
+
+    def process_status_codes(self) -> dict:
+        """
+        3rd to be called. \n
+        This method iterates through the response dictionary, where all the
+        futures are stored under their 'request id', extracts the response
+        status code from each of them. It creates a dictionary with the found
+        response codes as keys, and a list with each found response of that code.
+        :return: 'self.status_codes': dict of found responses status codes.
+        """
+        for req_dict in self.responses_list:
+            for _request_id, future in req_dict.items():
+                response: requests.Response = future.result()
+                status_code = response.status_code
+                if self.status_codes.get(status_code) is None:
+                    self.status_codes[status_code] = []
+                self.status_codes[status_code].append(response)
+        return self.status_codes
 
     @timer
     def _assess_url(self, req_id) -> requests.Response:
@@ -185,9 +232,9 @@ class AssessLatency:
         """
         try:
             self.response = requests.get(self.url)
-        except requests.RequestException as e:
+        except requests.exceptions.RequestException as e:
             error_message = f"Request failed: {e}"
-            raise AssessURLRequestError(error_message) from e
+            self.close(error_message)
         else:
             self.c.print(f"Response {req_id}: {self.response}")
             return self.response
@@ -202,13 +249,22 @@ class AssessLatency:
         Note: 'self.accuracy' is the number of requests over which the assessment will be taken.
         :return: 'self.responses_list' -> [{"RequestId": requests.Response}]
         """
-        with ThreadPoolExecutor(max_workers=self.accuracy) as executor:
-            for req_id, scan in enumerate(range(self.accuracy)):
-                future = executor.submit(self._assess_url, req_id)
-                self.responses_list.append({f"RequestId_{req_id}": future})
-                self.futures.append(future)
-                self.c.print(f"Sent request {req_id}.")
-            return self.responses_list
+        try:
+            with ThreadPoolExecutor(max_workers=self.accuracy) as executor:
+                for req_id, scan in enumerate(range(self.accuracy)):
+                    if self.future:
+                        if not self.future.cancelled():
+                            self.c.print(f"future status: {self.future.cancelled()}", style="blue")
+
+                    self.future = executor.submit(self._assess_url, req_id)
+                    if self.delay:
+                        time.sleep(self.delay)
+                    self.responses_list.append({f"RequestId_{req_id}": self.future})
+                    self.futures.append(self.future)
+                    self.c.print(f"Sent request {req_id}.")
+                return self.responses_list
+        except KeyboardInterrupt:
+            self.close("Detected CTRL+C. Bye.")
 
     def run(self) -> bool:
         """
@@ -219,11 +275,11 @@ class AssessLatency:
         """
         # Send the GET requests using ThreadPoolExecutor
         try:
-
             self.assess_url()
         except AssessURLRequestError as e:
             error_message = f"[-] AssessURL Run Error: {e}"
             self.close(error_message)
+        self.process_status_codes()
         self.process_latency_average()
         self.c.print(Markdown(self.get_response_latency_status()))
         try:
@@ -232,9 +288,13 @@ class AssessLatency:
             error_message = f"[-] AssessUrl Run Error: {e}.\n* Hint: Accuracy option ('-a') must be greater than 1."
             self.close(error_message)
         else:
-            self.c.print(self.network_test_passed())
-            self.generate_report()
+            self.c.print(f"Test Passed: {self.network_test_passed()} \n")
+            self.c.print(f"Generating report. \n", self.generate_report())
         return self.test_passed
+
+    def kill_all_threads(self):
+        for future in self.futures:
+            future.cancel()
 
     def close(self, error_message) -> None:
         """
@@ -245,6 +305,7 @@ class AssessLatency:
         :param error_message: error message passed in when error raised
         :return: None. Exit messages & Exit.
         """
+        self.kill_all_threads()
         self.c.print(Markdown(error_message), style="red")
         self.c.print("\n", Markdown("Use --help for more information or read the README.md file."))
         sys.exit(1)
@@ -277,7 +338,7 @@ class AssessLatency:
     "-t", "--threshold",
     help="The delta (+/-). Determines the lowest and the highest values the response time must be within, "
          "in order to be considered a normal response time (ie: <average_response_time> +/- <threshold>).",
-    default=0.2,
+    default=0.1,
     show_default=True,
     required=True,
     type=float
@@ -292,6 +353,14 @@ class AssessLatency:
     type=float
 )
 @click.option(
+    "-D", "--delay",
+    help="The seconds to wait in between requests.",
+    default=0.0,
+    show_default=True,
+    required=True,
+    type=float
+)
+@click.option(
     "-v", "--verbose",
     help="Use for verbosity.",
     is_flag=True,
@@ -299,9 +368,10 @@ class AssessLatency:
     required=False,
     type=bool
 )
-def main(url: str, accuracy, threshold, std_deviation_threshold, verbose: bool):
-    lat_ass = AssessLatency(url, accuracy, threshold, std_deviation_threshold, verbose=verbose)
+def main(url: str, accuracy, threshold, std_deviation_threshold, delay, verbose: bool):
+    lat_ass = AssessLatency(url, accuracy, threshold, std_deviation_threshold, delay, verbose=verbose)
     test_passed = lat_ass.run()
+    # responses_list = lat_ass.responses_list
     return test_passed
 
 

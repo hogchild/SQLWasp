@@ -4,34 +4,48 @@ from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
 from random import randint
 
+from ping3 import ping
 import requests
 from bs4 import BeautifulSoup
 from rich.console import Console
 
 num = lambda: randint(1, 5)
 response_list = []
-max_threads = 50
+max_threads = 10
 queues = [Queue() for _queue in range(max_threads)]
 futures = []
 url = "https://kamapuaa.it"
-
+host = "kamapuaa.it"
 c = Console()
 
 
-def assert_url(n):
-    try:
-        response = requests.get(url)
-    except requests.RequestException as e:
-        c.print(f"Request Error: {e}")
-    else:
-        c.print(f"Response {n}: {BeautifulSoup(response.content, features='html.parser').get_text()}")
+def purl(target_host):
+    return ping(target_host)
 
 
 with ThreadPoolExecutor(max_workers=max_threads) as executor:
-    for n, request in enumerate(range(max_threads)):
-        future = executor.submit(assert_url, n)
-        c.print(f"Future {n} submitted. \r")
+    for i, icmp_req in enumerate(range(max_threads)):
+        c.print(f"Sending Request n {i}")
+        future = executor.submit(purl, host)
         futures.append(future)
+        c.print(f"Request n {i} sent.")
+c.print(*[future.result() for future in futures])
+
+
+# def assert_url(n):
+#     try:
+#         response = requests.get(url)
+#     except requests.RequestException as e:
+#         c.print(f"Request Error: {e}")
+#     else:
+#         c.print(f"Response {n}: {BeautifulSoup(response.content, features='html.parser').get_text()}")
+#
+#
+# with ThreadPoolExecutor(max_workers=max_threads) as executor:
+#     for n, request in enumerate(range(max_threads)):
+#         future = executor.submit(assert_url, n)
+#         c.print(f"Future {n} submitted. \r")
+#         futures.append(future)
 
 
 
