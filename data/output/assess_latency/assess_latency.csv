@@ -1,0 +1,54 @@
+Data,Value
+Number of GET Requests Sent,15
+Number of Ping Requests Sent,15
+Requests Delay,0.0 secs
+Communication Quality Threshold,0.1 sec
+Ping Threshold,0.1 sec
+Standard Deviation Threshold,0.1 sec
+Ping Standard Deviation Threshold,0.1 sec
+GET Responses Latency Average,0.746237866083781 secs
+Min GET Responses Latency,0.6291730403900146 secs
+Max GET Responses Latency,0.8409552574157715 secs
+Ping responses Latency Average,0.07047411600748697 secs
+Min Ping responses Latency,0.039794921875 secs
+Max Ping responses Latency,0.10412883758544922 secs
+Standard Deviation,0.0 secs
+Ping Standard Deviation,0.0 secs
+Status Code: 200,Number of Responses: 15
+Test Passed,True
+Data,Value
+Number of GET Requests Sent,15
+Number of Ping Requests Sent,15
+Requests Delay,0.0 secs
+Communication Quality Threshold,0.1 sec
+Ping Threshold,0.1 sec
+Standard Deviation Threshold,0.1 sec
+Ping Standard Deviation Threshold,0.1 sec
+GET Responses Latency Average,0.7224126338958741 secs
+Min GET Responses Latency,0.5781009197235107 secs
+Max GET Responses Latency,0.794971227645874 secs
+Ping responses Latency Average,0.05478960673014323 secs
+Min Ping responses Latency,0.038011789321899414 secs
+Max Ping responses Latency,0.06957387924194336 secs
+Standard Deviation,0.0 secs
+Ping Standard Deviation,0.0 secs
+Status Code: 200,Number of Responses: 15
+Test Passed,True
+Data,Value
+Number of GET Requests Sent,20
+Number of Ping Requests Sent,20
+Requests Delay,0.0 secs
+Communication Quality Threshold,0.1 sec
+Ping Threshold,0.1 sec
+Standard Deviation Threshold,0.1 sec
+Ping Standard Deviation Threshold,0.1 sec
+GET Responses Latency Average,0.9033597350120545 secs
+Min GET Responses Latency,0.7498030662536621 secs
+Max GET Responses Latency,1.008286952972412 secs
+Ping responses Latency Average,0.06597517728805542 secs
+Min Ping responses Latency,0.042140960693359375 secs
+Max Ping responses Latency,0.11409211158752441 secs
+Standard Deviation,0.0 secs
+Ping Standard Deviation,0.0 secs
+Status Code: 200,Number of Responses: 20
+Test Passed,True

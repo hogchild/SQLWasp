@@ -2,3 +2,9 @@
 
 __pycache__
 .idea
+
+# Ignoring Files
+
+Ignoring Files
+data/output/.DS_Store
+SQLWasp/assess_latency.bak.py

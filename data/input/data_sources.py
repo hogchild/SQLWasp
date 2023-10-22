@@ -398,12 +398,16 @@ cookies_display_tab = """
 """
 
 standard_deviation_tab = """
-| **Max Value** | **Min Value** | **Standard Deviation** | **Current Deviation Threshold Value** |
-| :-----------: | :-----------: | :--------------------: | :-----------------------------------: |
+| **Type** | **Max Latency** | **Min Latency** | **Average Latency** | **Standard Deviation** | **Current Deviation Threshold Value** |
+| :------: | :-------------: | :-------------: | :-----------------: | :--------------------: | :-----------------------------------: |
 """
 response_latency_status_tab = """
 | **Average Response Time** | **Current Threshold Value** |
 | :-----------------------: | :-------------------------: |
+"""
+ping_response_latency_status_tab = """
+| **Average Ping Response Time** | **Current Ping Threshold Value** |
+| :----------------------------: | :------------------------------: |
 """
 
 urls_to_check = [
