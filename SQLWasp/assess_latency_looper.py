@@ -15,7 +15,7 @@ futures = []
 # urls = ["https://sivanandamusic.it", "https://www.kamapuaa.it"]
 #
 urls = [
-    "http://kamapuaa.it", "https://sivanandamusic.it", "https://google.com", "https://www.rainews.it/",
+    "http://kamapuaa.it", "https://sivanandamusic.it/", "https://sivanandamusic.it/fango", "https://google.com", "https://www.rainews.it/",
     "https://www.ilsole24ore.com/", "https://www.padovanet.it/"
 ]
 #
