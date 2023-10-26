@@ -7,8 +7,9 @@ send get requests to a given URL and appends the results in a list, which will l
 various calculations (based on the response times to the requests), to determine the quality of the
 communication with the web app.
 """
-import csv
 import functools
+import os.path
+import socket
 import statistics
 import sys
 import time
@@ -16,19 +17,22 @@ from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from fractions import Fraction
 from pathlib import Path
+from urllib.parse import urlparse
 
 import click
-import requests
 import pandas as pd
-import numpy as np
+import requests
 from ping3 import ping
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.table import Table
 
 from SQLWasp.custom_errors import CheckLatencyConsistencyError, AssessURLRequestError
+from SQLWasp.ai import AIControl
 from data.input.data_sources import standard_deviation_tab, response_latency_status_tab, \
-    ping_response_latency_status_tab
+    ping_response_latency_status_tab, http_status_codes
+
+ai_data_bucket_path = "data/input/ai/assess_latency/assess_latency.csv"
 
 
 def timer(func):
@@ -66,7 +70,8 @@ class AssessLatency:
         self.future = None
         self.ping_future = None
         self.url = url
-        self.host = url.split("//")[1].replace("/", "").replace("www.", "")
+        self.host = socket.gethostbyname(
+            urlparse(self.url).hostname)
         self.accuracy = accuracy
         self.threshold = threshold
         self.ping_threshold = ping_threshold
@@ -89,52 +94,63 @@ class AssessLatency:
         self.ping_latency_average = 0.0
         self.test_results = []
         self.test_passed = False
+        self.test_final_evaluation = None
         self.final_table: Table = Table()
         self.table_data = []
-        self.status_codes = {}
+        self.status_codes = http_status_codes
+        self.ai_data_bucket_path = ai_data_bucket_path
+        self.trained_ai_model_path = "data/input/ai/net_watcher.pkl"
+        self.input_data_csv_path = "data/input/ai/assess_latency/assess_latency.csv"
+
+    def ai_confirm(self):
+        ai = AIControl(self.trained_ai_model_path, self.input_data_csv_path, self.outfile)
+        ai.run()
+        self.c.print(f"AI Confirmation Test:", ai.predictions, style="cyan")
+        ai.train_model()
 
     def _create_pandaz_table(self):
-        table_data = []
-        table_data.append(["URL", self.url])
-        table_data.append(["Host", self.host])
-        table_data.append(["Number of GET Requests Sent", self.accuracy])
-        table_data.append(["Number of Ping Requests Sent", self.accuracy])
-        table_data.append(["Requests Delay (secs) ", self.delay])
-        table_data.append(["Communication Quality Threshold (secs)", self.threshold])
-        table_data.append(["Ping Threshold (secs)", self.ping_threshold])
-        table_data.append(["Standard Deviation Threshold (secs)", self.std_deviation_threshold])
-        table_data.append(["Ping Standard Deviation Threshold (secs)", self.ping_std_deviation_threshold])
-        table_data.append(["GET Responses Latency Average (secs)", self.latency_average])
-        table_data.append(["Min GET Responses Latency (secs)", min(self.latencies_list)])
-        table_data.append(["Max GET Responses Latency (secs)", max(self.latencies_list)])
-        table_data.append(["Ping responses Latency Average (secs)", self.ping_latency_average])
-        table_data.append(["Min Ping responses Latency (secs)", min(self.ping_latencies_list)])
-        table_data.append(["Max Ping responses Latency (secs)", max(self.ping_latencies_list)])
-        table_data.append(["Standard Deviation (secs)", self.std_deviation])
-        table_data.append(["Ping Standard Deviation (secs)", self.ping_std_deviation])
+        table_data = [
+            ["GET Sent", self.accuracy],
+            ["Ping Sent", self.accuracy],
+            ["Delay", self.delay],
+            ["Threshold", self.threshold],
+            ["Ping Threshold", self.ping_threshold],
+            ["Std Dev Threshold", self.std_deviation_threshold],
+            ["Ping Std Dev Threshold", self.ping_std_deviation_threshold],
+            ["GET Latency Average", self.latency_average],
+            ["Min GET Latency", min(self.latencies_list)],
+            ["Max GET Latency", max(self.latencies_list)],
+            ["Ping Latency Average", self.ping_latency_average],
+            ["Min Ping Latency", min(self.ping_latencies_list)],
+            ["Max Ping Latency", max(self.ping_latencies_list)],
+            ["Std Dev", self.std_deviation],
+            ["Ping Std Dev", self.ping_std_deviation],
+        ]
+        # self.c.print(self.status_codes)
         for status_code_category, response in self.status_codes.items():
             table_data.append(
-                [
-                    f"Status Code (n. of responses): {status_code_category}",
-                    len(self.status_codes.get(status_code_category))
-                ]
+                [f"{status_code_category}", len(response)]
             )
+        table_data.append(["Test Final Evaluation", self.test_final_evaluation])
         table_data.append(["Test Passed", self.test_passed])
-        self.c.print(table_data)
+        # self.c.print(table_data)
         return table_data
 
     def pandaz(self):
-        self.c.print(Markdown(f"# Table Data \n"))
+        # self.c.print(Markdown(f"# Table Data \n"))
         table_data = self._create_pandaz_table()
-        table_dict = dict(table_data)
-        df = pd.DataFrame(table_dict, index=[0])
-        self.c.print(df)
+        table_dict = [dict(table_data)]
+        df = pd.DataFrame(table_dict)
+        # self.c.print(df)
         return df
 
     def write_csv_file(self):
         table_data = self.pandaz()
-        with open(self.outfile, "a", newline="") as outfile:
-            table_data.to_csv(outfile)
+        if os.path.exists(self.outfile):
+            table_data.to_csv(self.outfile, mode="a", index=False, header=False)
+        else:
+            table_data.to_csv(self.outfile, index=False)
+        table_data.to_csv(self.ai_data_bucket_path, index=False)
         return self.table_data
 
     def generate_report(self) -> Table:
@@ -148,6 +164,8 @@ class AssessLatency:
         self.final_table = Table(title="Final Report Table", title_style="bold")
         self.final_table.add_column(header="Data", style="bold")
         self.final_table.add_column(header="Value", style="bold")
+        self.final_table.add_row("URL", str(self.url), style=None)
+        self.final_table.add_row("Host", str(self.host), style=None)
         self.final_table.add_row("Number of GET Requests Sent", str(self.accuracy), style=None)
         self.final_table.add_row("Number of Ping Requests Sent", str(self.accuracy), style=None)
         self.final_table.add_row("Requests Delay", f"{self.delay} secs", style=None)
@@ -166,21 +184,23 @@ class AssessLatency:
         for status_code_category, response in self.status_codes.items():
             self.final_table.add_row(
                 f"Status Code: {status_code_category}",
-                f"Number of Responses: {str(len(self.status_codes.get(status_code_category)))}"
+                f"Responses received: {str(len(self.status_codes.get(status_code_category)))}"
             )
-        self.final_table.add_row("Test Passed", str(self.test_passed))
+        self.final_table.add_row("Test Final Evaluation", str(self.test_final_evaluation))
+        self.final_table.add_row("Test Passed", str("True" if self.test_passed else "False"),style="blink")
         return self.final_table
 
-    def validate_test(self) -> bool:
+    def validate_test(self) -> tuple[int, float]:
         self.test_results = [res for res in self.test_results if res]
-        if 4 <= len(self.test_results) <= 4:
-            self.test_passed = True
+        if 6 <= len(self.test_results) <= 6:
+            self.test_passed = 1
         else:
-            self.test_passed = False
-        return self.test_passed
+            self.test_passed = 0
+        self.test_final_evaluation = len(self.test_results) / 6
+        return self.test_passed, self.test_final_evaluation
 
     # To be replaced with Machine Learning prediction
-    def network_test_passed(self) -> bool:
+    def network_test_passed(self) -> tuple[int, float]:
         """
         7th to be called. \n
         This method evaluates the results and returns a bool response.
@@ -200,11 +220,19 @@ class AssessLatency:
         else:
             self.test_results.append(False)
         for k in self.status_codes.keys():
-            if k == 200:
+            if k == f"{2}xx":
                 self.test_results.append(True)
             else:
                 self.test_results.append(False)
         if self.ping_reply:
+            self.test_results.append(True)
+        else:
+            self.test_results.append(False)
+        if self.ping_std_deviation < self.ping_std_deviation_threshold:
+            self.test_results.append(True)
+        else:
+            self.test_results.append(False)
+        if self.ping_bottom_threshold < self.ping_latency_average < self.ping_top_threshold:
             self.test_results.append(True)
         else:
             self.test_results.append(False)
@@ -223,7 +251,10 @@ class AssessLatency:
         """
         # Calculate the standard deviation
         try:
-            std_deviation = statistics.stdev(latencies_list)
+            if ping_values:
+                self.ping_std_deviation = statistics.stdev(latencies_list)
+            else:
+                self.std_deviation = statistics.stdev(latencies_list)
         except statistics.StatisticsError as e:
             error_message = f"Unable to test latency consistency: {e}"
             raise CheckLatencyConsistencyError(error_message) from e
@@ -231,6 +262,12 @@ class AssessLatency:
         # 'self.std_deviation_threshold' = 0.1 (or whatever)  # You can adjust this value based on your specific needs
         # Check if the standard deviation is below the threshold
         else:
+            if ping_values:
+                std_deviation = self.ping_std_deviation
+                std_deviation_threshold = self.ping_std_deviation_threshold
+            else:
+                std_deviation = self.std_deviation
+                std_deviation_threshold = self.std_deviation_threshold
             if std_deviation < std_deviation_threshold:
                 message = f"[+] GET responses latency Standard Deviation values are relatively consistent."
                 if ping_values:
@@ -255,8 +292,8 @@ class AssessLatency:
                 self.c.print("\n", message, style=style)
 
             record = (
-                f"| {record_type} | {max(latencies_list):.3f} | {min(latencies_list):.3f} | {latency_average} | {std_deviation} "
-                f"| {std_deviation_threshold} | \n")
+                f"| {record_type} | {max(latencies_list):.3f} | {min(latencies_list):.3f} | {latency_average} "
+                f"| {self.std_deviation} | {self.std_deviation_threshold} | \n")
             self.result_tab += record
             return self.result_tab
 
@@ -312,11 +349,11 @@ class AssessLatency:
         """
         if ping_values:
             self.ping_latency_average = statistics.mean(latencies_list)
-            self.c.print(f"Ping Latency Average {self.ping_latency_average}")
+            # self.c.print(f"Ping Latency Average {self.ping_latency_average}")
             return self.ping_latency_average
         else:
             self.latency_average = statistics.mean(latencies_list)
-            self.c.print(f"Latency Average {self.latency_average}")
+            # self.c.print(f"Latency Average {self.latency_average}")
             return self.latency_average
 
     def process_status_codes(self) -> dict:
@@ -329,12 +366,19 @@ class AssessLatency:
         :return: 'self.status_codes': dict of found responses status codes.
         """
         for req_dict in self.responses_list:
-            for _request_id, future in req_dict.items():
+            # self.c.print(self.responses_list, style="red")
+            for request_id, future in req_dict.items():
+                # self.c.print(f"{request_id}: {future}")
                 response: requests.Response = future.result()
-                status_code = response.status_code
-                if self.status_codes.get(status_code) is None:
-                    self.status_codes[status_code] = []
-                self.status_codes[status_code].append(response)
+                try:
+                    status_code = response.status_code
+                except AttributeError as e:
+                    self.c.print(f"Could not process status code: {e} \nSkipping..", style="dark_orange")
+                    pass
+                else:
+                    status_code_id = f"{str(status_code)[0]}xx"
+                    self.status_codes[status_code_id].append([response, self.url])
+            self.responses_list = []
         return self.status_codes
 
     def ping_test(self, icmp_req_id):
@@ -343,7 +387,6 @@ class AssessLatency:
             self.ping_reply = 0.0
         if self.ping_reply is False:
             self.ping_reply = 0.0
-        # self.c.print(f"Ping reply {icmp_req_id}: {self.ping_reply}")
         self.ping_latencies_list.append(self.ping_reply)
         return self.ping_reply
 
@@ -360,7 +403,7 @@ class AssessLatency:
             self.response = requests.get(self.url)
         except requests.exceptions.RequestException as e:
             error_message = f"Request failed: {e}"
-            self.close(error_message)
+            # self.close(error_message)
         else:
             # self.c.print(f"Response {req_id}: {self.response}")
             return self.response
@@ -376,15 +419,15 @@ class AssessLatency:
         :return: 'self.responses_list' -> [{"RequestId": requests.Response}]
         """
         try:
-            with ThreadPoolExecutor(max_workers=self.accuracy) as executor:
+            with ThreadPoolExecutor(max_workers=self.accuracy) as self.executor:
                 for req_id, scan in enumerate(range(self.accuracy)):
                     if self.future:
                         if self.future.cancelled():
                             error_message = f"future status: {self.future.cancelled()}"
                             self.close(error_message)
 
-                    self.future = executor.submit(self._assess_url, req_id)
-                    self.ping_future = executor.submit(self.ping_test, req_id)
+                    self.future = self.executor.submit(self._assess_url, req_id)
+                    self.ping_future = self.executor.submit(self.ping_test, req_id)
                     if self.delay:
                         time.sleep(self.delay)
                     self.responses_list.append({f"RequestId_{req_id}": self.future})
@@ -394,7 +437,7 @@ class AssessLatency:
                     # self.c.print(f"Sent GET request {req_id}. Ping request {req_id}")
             return self.responses_list, self.ping_responses_list
         except KeyboardInterrupt:
-            self.close("Detected CTRL+C. Bye.")
+            self.close("Detected CTRL+C. Bye.", keyb_int=True)
 
     def run(self) -> bool:
         """
@@ -410,24 +453,34 @@ class AssessLatency:
             # self.c.print([(list(d.keys())[0], list(d.values())[0].result()) for d in self.ping_responses_list])
         except AssessURLRequestError as e:
             error_message = f"[-] AssessURL Run Error: {e}"
-            self.close(error_message)
+            self.c.print(error_message)
+            pass
         self.process_status_codes()
-        # self.process_latency_average()
         self.process_latency_average(self.latencies_list)
         self.process_latency_average(self.ping_latencies_list, ping_values=True)
-        self.c.print(Markdown(self.get_response_latency_status(self.latency_average, self.threshold)))
-        self.c.print(
-            Markdown(
-                self.get_response_latency_status(self.ping_latency_average, self.ping_threshold, ping_values=True)
-            )
-        )
+        self.get_response_latency_status(self.latency_average, self.threshold)
+        self.get_response_latency_status(self.ping_latency_average, self.ping_threshold, ping_values=True)
+        # self.c.print(Markdown(self.get_response_latency_status(self.latency_average, self.threshold)))
+        # self.c.print(
+        #     Markdown(
+        #         self.get_response_latency_status(self.ping_latency_average, self.ping_threshold, ping_values=True)
+        #     )
+        # )
         try:
             # self.c.print(Markdown(self.check_latency_consistency(self.latencies_list, self.std_deviation_threshold)))
             self.check_latency_consistency(self.latencies_list, self.std_deviation_threshold)
-            self.c.print(Markdown(self.check_latency_consistency(self.ping_latencies_list, self.ping_std_deviation_threshold, ping_values=True)))
+            self.check_latency_consistency(
+                self.ping_latencies_list, self.ping_std_deviation_threshold, ping_values=True)
+            # self.c.print(
+            #     Markdown(
+            #         self.check_latency_consistency(
+            #             self.ping_latencies_list, self.ping_std_deviation_threshold, ping_values=True
+            #         )
+            #     )
+            # )
         except CheckLatencyConsistencyError as e:
             error_message = f"[-] AssessUrl Run Error: {e}.\n* Hint: Accuracy option ('-a') must be greater than 1."
-            self.close(error_message)
+            # self.close(error_message)
         else:
             # self.ping_test()
             self.c.print(f"Test Passed: {self.network_test_passed()} \n", style="green4")
@@ -435,26 +488,29 @@ class AssessLatency:
             if self.outfile:
                 self.c.print(f"[i] Writing outfile.")
                 self.write_csv_file()
-                self.pandaz()
-        return self.test_passed
+                self.ai_confirm()
+            return self.test_passed
 
     def kill_all_threads(self):
         for future in self.futures:
             future.cancel()
 
-    def close(self, error_message) -> None:
+    def close(self, error_message=None, keyb_int=False) -> None:
         """
         Closing method. \n
         It prints the error message passed as an argument,
         then the advice to check out --help.
         Finally, exits the program.
+        :param keyb_int:
         :param error_message: error message passed in when error raised
         :return: None. Exit messages & Exit.
         """
         self.kill_all_threads()
-        self.c.print(Markdown(error_message), style="red")
-        self.c.print("\n", Markdown("Use --help for more information or read the README.md file."))
-        sys.exit(1)
+        self.executor.shutdown()
+        if not keyb_int:
+            self.c.print(Markdown(error_message or "An ERROR occurred. \n"), style="red")
+            self.c.print("\n", Markdown("Use --help for more information or read the README.md file."))
+        sys.exit(0)
 
 
 @click.command(
@@ -540,8 +596,14 @@ class AssessLatency:
     required=False,
     type=bool
 )
-def main(url: str, accuracy, threshold, ping_threshold, std_deviation_threshold, ping_std_deviation_threshold, delay, outfile, verbose: bool):
-    lat_ass = AssessLatency(url, accuracy, threshold, ping_threshold, std_deviation_threshold, ping_std_deviation_threshold, delay, outfile, verbose=verbose)
+def main(
+        url: str, accuracy, threshold, ping_threshold, std_deviation_threshold,
+        ping_std_deviation_threshold, delay, outfile, verbose: bool
+):
+    lat_ass = AssessLatency(
+        url, accuracy, threshold, ping_threshold, std_deviation_threshold,
+        ping_std_deviation_threshold, delay, outfile, verbose=verbose
+    )
     test_passed = lat_ass.run()
     # responses_list = lat_ass.responses_list
     return test_passed

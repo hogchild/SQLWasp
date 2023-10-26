@@ -1,0 +1,2 @@
+GET Sent,Ping Sent,Delay,Threshold,Ping Threshold,Std Dev Threshold,Ping Std Dev Threshold,GET Latency Average,Min GET Latency,Max GET Latency,Ping Latency Average,Min Ping Latency,Max Ping Latency,Std Dev,Ping Std Dev,1xx,2xx,3xx,4xx,5xx,Test Final Evaluation,Test Passed
+2,2,0.3,1.0,0.3,6.3,0.1,13.813783526420593,13.34378695487976,14.283780097961426,0.06848859786987305,0.06371712684631348,0.07326006889343262,0.664675525741902,0.006747879033988178,0,2,0,0,0,1.0,1

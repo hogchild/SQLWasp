@@ -1,69 +1,48 @@
 #!/usr/bin/env python3.12
 # scratch.py
-
-import functools
-import time
-from concurrent.futures import ThreadPoolExecutor
-
 from rich.console import Console
-
-from SQLWasp.assess_latency import AssessLatency
+from sklearn.datasets import load_iris
+import pandas as pd
+import numpy as np
 
 c = Console()
-
-futures = []
-# urls = ["https://sivanandamusic.it", "https://www.kamapuaa.it"]
-#
-urls = [
-    "http://kamapuaa.it", "https://sivanandamusic.it", "https://google.com", "https://www.rainews.it/",
-    "https://www.ilsole24ore.com/", "https://www.padovanet.it/"
-]
-#
-# accuracy = 1
-# threshold = 0.1
-# ping_threshold = 0.1
-# std_deviation_threshold = 0.1
-# ping_std_deviation_threshold = 0.1
-# delay = 0.0
-# outfile = "data/output/assess_latency/assess_latency.csv"
-# verbose = True
+train_input_file = "data/output/assess_latency/assess_latency.csv"
+df = pd.read_csv(train_input_file)
+df = df.dropna()
+df = df.drop(columns=["URL", "Test Passed", "Test Final Evaluation"])
+# c.print(df["Test Passed"])
+c.print(df.dropna())
 
 
-def timer(func):
-    @functools.wraps(func)
-    def wrapper_timer(*args, **kwargs):
-        start_time = time.time()
-        c.print(f"Start time '{func.__name__}: {start_time}'")
-        value = func(*args, **kwargs)
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        c.print(f"End time '{func.__name__}: {end_time}'")
-        c.print(f"Completed '{func.__name__} in: {elapsed_time}'")
-        return value
+def _create_pandaz_table(self):
+    table_data = [["URL", url],
+                  ["Host", host],
+                  ["Number of GET Requests Sent", accuracy],
+                  ["Number of Ping Requests Sent", accuracy],
+                  ["Requests Delay (secs) ", delay],
+                  ["Communication Quality Threshold (secs)", threshold],
+                  ["Ping Threshold (secs)", ping_threshold],
+                  ["Standard Deviation Threshold (secs)", std_deviation_threshold],
+                  ["Ping Standard Deviation Threshold (secs)", ping_std_deviation_threshold],
+                  ["GET Responses Latency Average (secs)", latency_average],
+                  ["Min GET Responses Latency (secs)", min(latencies_list)],
+                  ["Max GET Responses Latency (secs)", max(latencies_list)],
+                  ["Ping responses Latency Average (secs)", ping_latency_average],
+                  ["Min Ping responses Latency (secs)", min(ping_latencies_list)],
+                  ["Max Ping responses Latency (secs)", max(ping_latencies_list)],
+                  ["Standard Deviation (secs)", std_deviation],
+                  ["Ping Standard Deviation (secs)", ping_std_deviation]]
+    for status_code_category, response in status_codes.items():
+        table_data.append(
+            [
+                "Status Code (n. of responses): {status_code_category}",
+                len(status_codes.get(status_code_category))
+            ]
+        )
+    table_data.append(["Test Final Evaluation", test_final_evaluation])
+    table_data.append(["Test Passed", test_passed])
+    a = np.array(table_data)
+    c.print(a)
+    return table_data
 
-    return wrapper_timer
 
-
-@timer
-def fire_assess_latency(urls_list, *args, **kwargs):
-    with ThreadPoolExecutor(max_workers=len(urls_list)) as executor:
-        for url in urls_list:
-            lat_ass = AssessLatency(url, *args, **kwargs)
-            future = executor.submit(
-                lat_ass.run
-            )
-            futures.append(future)
-
-
-if __name__ == '__main__':
-    fire_assess_latency(
-        urls, accuracy=2,
-        threshold=0.1,
-        ping_threshold=0.1,
-        std_deviation_threshold=0.1,
-        ping_std_deviation_threshold=0.1,
-        delay=0.0,
-        outfile="data/output/assess_latency/assess_latency.csv",
-        verbose=False,
-        # verbose=True,
-    )

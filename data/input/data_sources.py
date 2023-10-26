@@ -410,6 +410,14 @@ ping_response_latency_status_tab = """
 | :----------------------------: | :------------------------------: |
 """
 
+http_status_codes = {
+    "1xx": [],
+    "2xx": [],
+    "3xx": [],
+    "4xx": [],
+    "5xx": []
+}
+
 urls_to_check = [
     "https://yahoo.com",
     "https://kamapuaa.it",
