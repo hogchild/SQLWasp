@@ -1,81 +1,135 @@
 #!/usr/bin/env python3.12
 # scratch.py
+import datetime
 import functools
+import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 
+import pandas.errors
 from rich.console import Console
 
+# import SQLWasp.assess_latency
 from SQLWasp.assess_latency import AssessLatency
+
+# urls = ["https://sivanandamusic.it", "https://www.kamapuaa.it"]
+# urls = ["https://google.it", "https://kamapuaa.it"]
 
 c = Console()
 
 futures = []
-# urls = ["https://sivanandamusic.it", "https://www.kamapuaa.it"]
-#
+wrong_predictions = {}
+right_predictions = {}
+
 urls = [
     "http://kamapuaa.it", "https://sivanandamusic.it/", "https://sivanandamusic.it/fango", "https://google.com",
     "https://www.rainews.it/",
     "https://www.ilsole24ore.com/", "https://www.padovanet.it/", "https://yahoo.com",
     "https://dev.energiasolare100.com/",
-    "https://www.duowatt.it/", "https://top10best.how/", "https://www.solar-electric.com/", "http://www.flexienergy.it/"
+    "https://www.duowatt.it/", "https://top10best.how/", "https://www.solar-electric.com/",
+    "http://www.flexienergy.it/",
+    "https://www.ginlong.com", "https://www.manomano.it/", "https://www.agrieuro.com/", "https://www.peimar.com/",
+    "https://www.money.it/", "https://tg24.sky.it/", "https://www.maranza.net", "https://www.val-pusteria.net/",
+    "https://www.riopusteria.it/", "https://accademiadellacrusca.it/", "https://www.wired.it/",
+    "https://milano.corriere.it/", "https://www.suedtirolerland.it", "https://www.valleisarco.net",
+    "https://www.maranza.org/", "https://www.dolomititour.com/", "https://www.expedia.it", "https://www.tavolla.com/",
+    "https://www.vectronenergia.it", "https://climaidraulica.it", "https://mac3.it",
+    "https://www.energialternativa.info", "https://mideafsc.en.made-in-china.com"
 ]
-
-# urls = ["https://google.it", "https://kamapuaa.it"]
+url = ""
 
 
 def timer(func):
     @functools.wraps(func)
     def wrapper_timer(*args, **kwargs):
+        def h_time(timestamp):
+            return datetime.datetime.fromtimestamp(timestamp)
+
         start_time = time.time()
-        c.print(f"Start time '{func.__name__}: {start_time}'")
+        c.print(f"Function '{func.__name__}' started at: {h_time(start_time)}.", style="blue bold")
         value = func(*args, **kwargs)
         end_time = time.time()
         elapsed_time = end_time - start_time
-        c.print(f"End time '{func.__name__}: {end_time}'")
-        c.print(f"Completed '{func.__name__} in: {elapsed_time}'")
+        c.print("\n", f"Function '{func.__name__}' end time: {h_time(end_time)}.", style="blue bold")
+        c.print(f"Completed in: {elapsed_time:.2f} seconds.", style="blue bold")
         return value
 
     return wrapper_timer
 
 
-# @timer
-def fire_assess_latency(target_url,
-                        accuracy=2,
-                        threshold=0.1,
-                        ping_threshold=0.1,
-                        std_deviation_threshold=0.1,
-                        ping_std_deviation_threshold=0.1,
-                        delay=1.0,
-                        outfile="data/output/assess_latency/assess_latency.csv",
-                        verbose=True, ):
-    lat_ass = AssessLatency(target_url,
-                            accuracy,
-                            threshold,
-                            ping_threshold,
-                            std_deviation_threshold,
-                            ping_std_deviation_threshold,
-                            delay,
-                            outfile,
-                            verbose)
-    lat_ass.run()
-    lat_ass.__init__()
+def _fire(target_url, accuracy, outfile, delay):
+    latency_assessor = AssessLatency(url=target_url, accuracy=accuracy, outfile=outfile, delay=delay)
+    latency_assessor.run()
+    return latency_assessor.final_table, latency_assessor.test_passed, latency_assessor.ai_prediction
+
+
+@timer
+def fire():
+    global url
+    try:
+        with ThreadPoolExecutor(max_workers=12) as executor:
+            for url in urls:
+                future = executor.submit(_fire, target_url=url, accuracy=10, outfile="test.csv", delay=0.3)
+                futures.append(future)
+    except KeyboardInterrupt:
+        error_message = "[+] Detected CTRL+C. Killing all processes and quitting the program."
+        c.print(error_message, style="green")
+        # close(executor, url)
+
+
+def cas():
+    fire()
+    try:
+        for future in futures:
+            final_table, test_passed, ai_prediction = future.result()
+            if test_passed != ai_prediction[0]:
+                wrong_predictions[url] = [test_passed, ai_prediction]
+            else:
+                right_predictions[url] = [test_passed, ai_prediction]
+            c.print(final_table, test_passed, ai_prediction)
+    except (ValueError, pandas.errors.EmptyDataError):
+        pass
+
+# def fire():
+#     try:
+#         with ThreadPoolExecutor(max_workers=len(urls)) as executor:
+#             future: concurrent.futures.Future = concurrent.futures.Future()
+#             for url in urls:
+#                 if future:
+#                     if future.cancelled():
+#                         close(executor, url)
+#                 args = [
+#                     "python3", "-m",
+#                     "SQLWasp.assess_latency", url,  # "-v",
+#                     "--accuracy", "2",
+#                     "--delay", "0.3",
+#                     "--threshold", "1.0",
+#                     "--ping-threshold", "0.3",
+#                     "--std-deviation-threshold", "6.3",
+#                     "--ping-std-deviation-threshold", "0.1"
+#                 ]
+#                 future = executor.submit(subprocess.run, args)
+#                 futures.append(future)
+#     except KeyboardInterrupt:
+#         error_message = "[+] Detected CTRL+C. Killing all processes and quitting the program."
+#         c.print(error_message, style="green")
+#         close(executor, url)
+
+
+def print_results():
+    c.print(f"Right predictions: {len(right_predictions)}. Wrong predictions: {len(wrong_predictions)}")
+
+
+def close(executor, target_url):
+    for future in futures:
+        future.cancel()
+        c.print(f"[+] Process stopped. (URL: '{target_url}')", style="dark_orange")
+        executor.shutdown()
+        c.print(f"[+] Executor shutdown (URL: '{target_url}')", style="dark_orange")
+        c.print(f"[+] Quitting program.", style="dark_orange")
+        sys.exit(0)
 
 
 if __name__ == '__main__':
-    with ThreadPoolExecutor(max_workers=len(urls)) as executor:
-        for url in urls:
-            future = executor.submit(
-                fire_assess_latency,
-                url,
-                accuracy=2,
-                threshold=0.1,
-                ping_threshold=0.1,
-                std_deviation_threshold=0.1,
-                ping_std_deviation_threshold=0.1,
-                delay=1.0,
-                outfile="data/output/assess_latency/assess_latency.csv",
-                # verbose=False,
-                verbose=True,
-            )
-            futures.append(future)
+    cas()
+    print_results()

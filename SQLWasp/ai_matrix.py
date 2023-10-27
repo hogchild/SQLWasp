@@ -76,3 +76,8 @@ class AiTrainer:
         self.predict()
         self.accuracy_report()
         self.print_reports()
+
+
+if __name__ == '__main__':
+    trainer = AiTrainer(outfile_file_path, trained_model_file_path)
+    trainer.run()

@@ -17,6 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from fractions import Fraction
 from pathlib import Path
+from threading import Lock
 from urllib.parse import urlparse
 
 import click
@@ -97,6 +98,7 @@ class AssessLatency:
         self.test_final_evaluation = None
         self.final_table: Table = Table()
         self.table_data = []
+        self.ai_prediction = None
         self.status_codes = http_status_codes
         self.ai_data_bucket_path = ai_data_bucket_path
         self.trained_ai_model_path = "data/input/ai/net_watcher.pkl"
@@ -105,8 +107,10 @@ class AssessLatency:
     def ai_confirm(self):
         ai = AIControl(self.trained_ai_model_path, self.input_data_csv_path, self.outfile)
         ai.run()
-        self.c.print(f"AI Confirmation Test:", ai.predictions, style="cyan")
-        ai.train_model()
+        return ai.predictions
+        # return f"AI Confirmation Test: {AI.predictions}"
+        # self.c.print(f"AI Confirmation Test:", AI.predictions, style="cyan")
+        # ai.train_model()
 
     def _create_pandaz_table(self):
         table_data = [
@@ -131,6 +135,7 @@ class AssessLatency:
             table_data.append(
                 [f"{status_code_category}", len(response)]
             )
+        self.clear_status_codes()
         table_data.append(["Test Final Evaluation", self.test_final_evaluation])
         table_data.append(["Test Passed", self.test_passed])
         # self.c.print(table_data)
@@ -187,7 +192,7 @@ class AssessLatency:
                 f"Responses received: {str(len(self.status_codes.get(status_code_category)))}"
             )
         self.final_table.add_row("Test Final Evaluation", str(self.test_final_evaluation))
-        self.final_table.add_row("Test Passed", str("True" if self.test_passed else "False"),style="blink")
+        self.final_table.add_row("Test Passed", str("True" if self.test_passed else "False"), style="blink")
         return self.final_table
 
     def validate_test(self) -> tuple[int, float]:
@@ -356,6 +361,9 @@ class AssessLatency:
             # self.c.print(f"Latency Average {self.latency_average}")
             return self.latency_average
 
+    def clear_status_codes(self):
+        for status_code_category in self.status_codes.keys():
+            self.status_codes[status_code_category] = []
     def process_status_codes(self) -> dict:
         """
         3rd to be called. \n
@@ -403,6 +411,7 @@ class AssessLatency:
             self.response = requests.get(self.url)
         except requests.exceptions.RequestException as e:
             error_message = f"Request failed: {e}"
+            self.c.print(error_message)
             # self.close(error_message)
         else:
             # self.c.print(f"Response {req_id}: {self.response}")
@@ -419,27 +428,28 @@ class AssessLatency:
         :return: 'self.responses_list' -> [{"RequestId": requests.Response}]
         """
         try:
-            with ThreadPoolExecutor(max_workers=self.accuracy) as self.executor:
-                for req_id, scan in enumerate(range(self.accuracy)):
-                    if self.future:
-                        if self.future.cancelled():
-                            error_message = f"future status: {self.future.cancelled()}"
-                            self.close(error_message)
+            with Lock():
+                with ThreadPoolExecutor(max_workers=self.accuracy) as self.executor:
+                    for req_id, scan in enumerate(range(self.accuracy)):
+                        if self.future:
+                            if self.future.cancelled():
+                                error_message = f"Future status cancelled: {self.future.cancelled()}"
+                                self.close(error_message)
 
-                    self.future = self.executor.submit(self._assess_url, req_id)
-                    self.ping_future = self.executor.submit(self.ping_test, req_id)
-                    if self.delay:
-                        time.sleep(self.delay)
-                    self.responses_list.append({f"RequestId_{req_id}": self.future})
-                    self.futures.append(self.future)
-                    self.ping_responses_list.append({f"PingRequestId_{req_id}": self.ping_future})
-                    self.futures.append(self.ping_future)
-                    # self.c.print(f"Sent GET request {req_id}. Ping request {req_id}")
-            return self.responses_list, self.ping_responses_list
+                        self.future = self.executor.submit(self._assess_url, req_id)
+                        self.ping_future = self.executor.submit(self.ping_test, req_id)
+                        if self.delay:
+                            time.sleep(self.delay)
+                        self.responses_list.append({f"RequestId_{req_id}": self.future})
+                        self.futures.append(self.future)
+                        self.ping_responses_list.append({f"PingRequestId_{req_id}": self.ping_future})
+                        self.futures.append(self.ping_future)
+                        # self.c.print(f"Sent GET request {req_id}. Ping request {req_id}")
+                return self.responses_list, self.ping_responses_list
         except KeyboardInterrupt:
             self.close("Detected CTRL+C. Bye.", keyb_int=True)
 
-    def run(self) -> bool:
+    def run(self) -> tuple[Table, bool, str]:
         """
         Method 0 \n
         This is the central method, the one that calls , in order, all the other
@@ -480,22 +490,33 @@ class AssessLatency:
             # )
         except CheckLatencyConsistencyError as e:
             error_message = f"[-] AssessUrl Run Error: {e}.\n* Hint: Accuracy option ('-a') must be greater than 1."
+            self.c.print(error_message)
             # self.close(error_message)
         else:
             # self.ping_test()
-            self.c.print(f"Test Passed: {self.network_test_passed()} \n", style="green4")
-            self.c.print(f"Generating report. \n", self.generate_report())
+            self.network_test_passed()
+            # self.c.print(f"Test Passed: {self.network_test_passed()} \n", style="green4")
+            self.generate_report()
+            # self.c.print(f"Generating report. \n", self.generate_report())
             if self.outfile:
-                self.c.print(f"[i] Writing outfile.")
+                # self.c.print(f"[i] Writing outfile.")
                 self.write_csv_file()
-                self.ai_confirm()
-            return self.test_passed
+                self.ai_prediction = self.ai_confirm()
+                prediction_is_valid = self.test_passed == self.ai_prediction[0]
+                if prediction_is_valid:
+                    pass
+                    # self.prediction_validation_list.append(prediction_is_valid)
+                    # self.c.print(Markdown(f"Prediction is valid: \n* {prediction_is_valid}"), style="red")
+                # self.c.print(self.final_table, "\n", Markdown(f"Prediction is valid: \n* {prediction_is_valid}"))
+            self.status_codes = {}
+            # self.close(end_of_run=True)
+            return self.final_table, self.test_passed, self.ai_prediction
 
     def kill_all_threads(self):
         for future in self.futures:
             future.cancel()
 
-    def close(self, error_message=None, keyb_int=False) -> None:
+    def close(self, error_message=None, keyb_int=False, end_of_run=False) -> None:
         """
         Closing method. \n
         It prints the error message passed as an argument,
@@ -508,9 +529,10 @@ class AssessLatency:
         self.kill_all_threads()
         self.executor.shutdown()
         if not keyb_int:
-            self.c.print(Markdown(error_message or "An ERROR occurred. \n"), style="red")
+            self.c.print(Markdown(error_message), style="red")
             self.c.print("\n", Markdown("Use --help for more information or read the README.md file."))
-        sys.exit(0)
+        if not end_of_run:
+            sys.exit(0)
 
 
 @click.command(

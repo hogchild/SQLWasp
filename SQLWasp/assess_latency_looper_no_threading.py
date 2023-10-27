@@ -79,6 +79,11 @@ def fire():
         close(executor, url)
 
 
+def print_results():
+    for future in futures:
+        c.print("Result:", future.result())
+
+
 def close(executor, url):
     for future in futures:
         future.cancel()
@@ -91,3 +96,4 @@ def close(executor, url):
 
 if __name__ == '__main__':
     fire()
+    # print_results()

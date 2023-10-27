@@ -56,11 +56,13 @@ class AIControl:
 
     def load_df(self):
         self.df = pd.read_csv(self.input_data_csv_path)
+        self.df.dropna()
+        self.df.drop_duplicates()
         self.df = self.df.drop(columns=["Test Passed", "Test Final Evaluation"], axis=1)
 
     def predict(self):
         self.predictions = self.clf.predict(self.df)
-        c.print(f"Predictions: {self.predictions}")
+        # c.print(f"Predictions: {self.predictions}")
 
     def train_model(self):
         ai_trainer = AiTrainer(self.outfile_path, self.trained_model_path)
