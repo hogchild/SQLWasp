@@ -2,6 +2,7 @@
 # assess_latency.py
 import joblib
 import pandas as pd
+import pandas.errors
 from rich.console import Console
 
 from SQLWasp.ai_matrix import AiTrainer
@@ -55,14 +56,21 @@ class AIControl:
         self.clf = joblib.load(self.trained_model_path)
 
     def load_df(self):
-        self.df = pd.read_csv(self.input_data_csv_path)
-        self.df.dropna()
-        self.df.drop_duplicates()
-        self.df = self.df.drop(columns=["Test Passed", "Test Final Evaluation"], axis=1)
+        try:
+            self.df = pd.read_csv(self.input_data_csv_path)
+        except (ValueError):
+            pass
+        else:
+            self.df.dropna()
+            self.df.drop_duplicates()
+            self.df = self.df.drop(columns=["Test Passed", "Test Final Evaluation"], axis=1)
 
     def predict(self):
-        self.predictions = self.clf.predict(self.df)
-        # c.print(f"Predictions: {self.predictions}")
+        try:
+            self.predictions = self.clf.predict(self.df)
+            # c.print(f"Predictions: {self.predictions}")
+        except (ValueError):
+            pass
 
     def train_model(self):
         ai_trainer = AiTrainer(self.outfile_path, self.trained_model_path)

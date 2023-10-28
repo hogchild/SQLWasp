@@ -3,6 +3,7 @@
 __pycache__
 .idea
 .ipynb_checkpoints/
+trash/
 
 # Ignoring Files
 
@@ -11,4 +12,5 @@ data/output/.DS_Store
 SQLWasp/assess_latency.bak.py
 Untitled.ipynb
 data/output/assess_latency/assess_latency.bak.csv
+data/output/assess_latency/assess_latency.bak2.csv
 SQLWasp/assess_latency.bak2.py

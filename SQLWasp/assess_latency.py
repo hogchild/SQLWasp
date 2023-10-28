@@ -623,8 +623,8 @@ def main(
         ping_std_deviation_threshold, delay, outfile, verbose: bool
 ):
     lat_ass = AssessLatency(
-        url, accuracy, threshold, ping_threshold, std_deviation_threshold,
-        ping_std_deviation_threshold, delay, outfile, verbose=verbose
+            url, accuracy, threshold, ping_threshold, std_deviation_threshold,
+            ping_std_deviation_threshold, delay, outfile, verbose=verbose
     )
     test_passed = lat_ass.run()
     # responses_list = lat_ass.responses_list
