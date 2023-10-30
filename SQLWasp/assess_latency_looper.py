@@ -23,6 +23,7 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from queue import Queue
 
 import click
+import numpy as np
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.table import Table
@@ -190,7 +191,7 @@ class Looper:
             error_message = f"Detected CTRL+C. Exiting."
             self.close(error_message, key_int=True)
 
-    def fire(self, url) -> tuple[Table, bool, str]:
+    def fire(self, url) -> tuple[Table, bool, np.ndarray]:
         """
         3rd method to be called. \n
         This method instantiates the AssessLatency class and actually runs it.
@@ -277,7 +278,7 @@ class Looper:
 def validate_max_threads(ctx, param, value):
     try:
         value = int(value)
-    except ValueError as e:
+    except ValueError:
         error_message = f"Invalid literal {value}. Please enter a valid integer between 2 and 12."
         raise click.BadParameter(error_message)
     else:

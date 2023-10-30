@@ -17,6 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from fractions import Fraction
 from pathlib import Path
+from queue import Queue
 from threading import Lock
 from urllib.parse import urlparse
 
@@ -45,6 +46,7 @@ def timer(func):
     :param func:
     :return:
     """
+
     @functools.wraps(func)
     def wrapper_timer(self, *args, **kwargs):
         start_time = time.time()
@@ -65,6 +67,7 @@ class AssessLatency:
     communication. It has to be used with the 'SQLWasp.assess_latency_looper' for best result and speed. This
     class and the Looper class are multithreaded.
     """
+
     def __init__(self, url: str, accuracy: int = 10, threshold: float = 0.1, ping_threshold: float = 0.1,
                  std_deviation_threshold: float = 0.1, ping_std_deviation_threshold: float = 0.1, delay: float = 0.0,
                  outfile: Path | str = None, verbose: bool = False) -> None:
@@ -122,6 +125,7 @@ class AssessLatency:
         self.ai_data_bucket_path = ai_data_bucket_path
         self.trained_ai_model_path = "data/input/ai/net_watcher.pkl"
         self.input_data_csv_path = "data/input/ai/assess_latency/assess_latency.csv"
+        self.queues = [Queue() for _queue in range(self.accuracy)]
 
     # CHECK DOCSTRING FOR MODIFICATION SUGGESTIONS.
     def get_host_name(self) -> str:
@@ -534,29 +538,74 @@ class AssessLatency:
             with Lock():
                 # Start ThreadPoolExecutor to send concurrent GET and ping requests
                 with ThreadPoolExecutor(max_workers=self.accuracy) as self.executor:
-                    for req_id, scan in enumerate(range(self.accuracy)):
-                        # Check if future is in a 'cancelled' state. That would typically indicate
-                        # a KeyboardInterrupt. If so kill all other processes and shutdown the executor.
-                        if self.future:
-                            if self.future.cancelled():
-                                error_message = f"Future status cancelled: {self.future.cancelled()}"
-                                self.close(error_message)
-                        # Create futures for both GET and ping requests
-                        self.future = self.executor.submit(self._assess_url)
-                        self.ping_future = self.executor.submit(self.ping_test)
-                        # Adjust the delay, the frequency of the requests.
-                        if self.delay:
-                            time.sleep(self.delay)
-                        # Create a list of dictionaries with the responses.
-                        self.responses_list.append({f"RequestId_{req_id}": self.future})
-                        # Create a list of futures for killing threads on closure (see 'self.close').
-                        self.futures.append(self.future)
-                        # Same for pings.
-                        self.ping_responses_list.append({f"PingRequestId_{req_id}": self.ping_future})
-                        self.futures.append(self.ping_future)
+                    for thread_id, queue in enumerate(self.queues):
+                        while not queue.empty():
+                            # Check if future is in a 'cancelled' state. That would typically indicate
+                            # a KeyboardInterrupt. If so kill all other processes and shutdown the executor.
+                            if self.future:
+                                if self.future.cancelled():
+                                    error_message = f"Future status cancelled: {self.future.cancelled()}"
+                                    self.close(error_message)
+                            # Create futures for both GET and ping requests
+                            self.future = self.executor.submit(self._assess_url)
+                            self.ping_future = self.executor.submit(self.ping_test)
+                            # Adjust the delay, the frequency of the requests.
+                            if self.delay:
+                                time.sleep(self.delay)
+                            # Create a list of dictionaries with the responses.
+                            scan_id = self.queues[thread_id].get()
+                            self.responses_list.append({f"RequestId_{scan_id}": self.future})
+                            # Create a list of futures for killing threads on closure (see 'self.close').
+                            self.futures.append(self.future)
+                            # Same for pings.
+                            self.ping_responses_list.append({f"PingRequestId_{scan_id}": self.ping_future})
+                            self.futures.append(self.ping_future)
                 return self.responses_list, self.ping_responses_list
         except KeyboardInterrupt:
             self.close("Detected CTRL+C. Bye.", keyboard_interrupt=True)
+
+    # def assess_url(self) -> tuple[list[dict], list[dict]]:
+    #     """
+    #     1st to be called.\n
+    #     This method creates a list of dictionaries, with request ids as keys and
+    #     the response to the GET request as values. It does so by means of the
+    #     'self._assess_url()' helper method, which actually takes care of sending
+    #     the requests and storing the responses in the 'self.response' instance variable.\n
+    #     Note: 'self.accuracy' is the number of requests over which the assessment will be taken.
+    #     :return: 'self.responses_list' -> [{"RequestId": requests.Response}]
+    #     """
+    #     try:
+    #         with Lock():
+    #             # Start ThreadPoolExecutor to send concurrent GET and ping requests
+    #             with ThreadPoolExecutor(max_workers=self.accuracy) as self.executor:
+    #                 for req_id, _scan in enumerate(range(self.accuracy)):
+    #                     # Check if future is in a 'cancelled' state. That would typically indicate
+    #                     # a KeyboardInterrupt. If so kill all other processes and shutdown the executor.
+    #                     if self.future:
+    #                         if self.future.cancelled():
+    #                             error_message = f"Future status cancelled: {self.future.cancelled()}"
+    #                             self.close(error_message)
+    #                     # Create futures for both GET and ping requests
+    #                     self.future = self.executor.submit(self._assess_url)
+    #                     self.ping_future = self.executor.submit(self.ping_test)
+    #                     # Adjust the delay, the frequency of the requests.
+    #                     if self.delay:
+    #                         time.sleep(self.delay)
+    #                     # Create a list of dictionaries with the responses.
+    #                     self.responses_list.append({f"RequestId_{req_id}": self.future})
+    #                     # Create a list of futures for killing threads on closure (see 'self.close').
+    #                     self.futures.append(self.future)
+    #                     # Same for pings.
+    #                     self.ping_responses_list.append({f"PingRequestId_{req_id}": self.ping_future})
+    #                     self.futures.append(self.ping_future)
+    #             return self.responses_list, self.ping_responses_list
+    #     except KeyboardInterrupt:
+    #         self.close("Detected CTRL+C. Bye.", keyboard_interrupt=True)
+
+    def create_queues(self):
+        for i, scan_id in enumerate(range(self.accuracy)):
+            thread_id = i % self.accuracy
+            self.queues[thread_id].put(scan_id)
 
     def run(self) -> tuple[Table, bool, np.ndarray]:
         """
@@ -568,6 +617,7 @@ class AssessLatency:
         :return: Final Result Table ('self.final_table'), Test Passed ('self.test_passed')
         and Ai Prediction ('self.ai_prediction').
         """
+        self.create_queues()
         try:
             # Send the GET requests using ThreadPoolExecutor.
             self.assess_url()
@@ -614,13 +664,12 @@ class AssessLatency:
         for future in self.futures:
             future.cancel()
 
-    def close(self, error_message=None, keyboard_interrupt=False, end_of_run=False) -> None:
+    def close(self, error_message=None, keyboard_interrupt=False) -> None:
         """
         Closing method. \n
         It prints the error message passed as an argument,
         then the advice to check out --help.
         Finally, exits the program.
-        :param end_of_run: If True doe
         :param keyboard_interrupt:
         :param error_message: error message passed in when error raised
         :return: None. Exit messages & Exit.
@@ -630,7 +679,6 @@ class AssessLatency:
         if not keyboard_interrupt:
             self.c.print(Markdown(error_message), style="red")
             self.c.print("\n", Markdown("Use --help for more information or read the README.md file."))
-        # if not end_of_run:
         sys.exit(0)
 
 
