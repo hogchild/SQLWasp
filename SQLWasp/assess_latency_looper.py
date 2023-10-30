@@ -21,6 +21,7 @@ import time
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor
 from queue import Queue
+from threading import Lock
 
 import click
 import numpy as np
@@ -221,14 +222,15 @@ class Looper:
         :return: None
         """
         try:
-            with ThreadPoolExecutor(max_workers=12) as self.executor:
-                if self.future.cancelled():
-                    self.close("")
-                for thread_id, queue in enumerate(self.get_queues):
-                    while not queue.empty():
-                        self.url = self.get_queues[thread_id].get()
-                        self.future = self.executor.submit(self.fire, self.url)
-                        self.futures[thread_id].put(self.future)
+            with Lock():
+                with ThreadPoolExecutor(max_workers=12) as self.executor:
+                    if self.future.cancelled():
+                        self.close("")
+                    for thread_id, queue in enumerate(self.get_queues):
+                        while not queue.empty():
+                            self.url = self.get_queues[thread_id].get()
+                            self.future = self.executor.submit(self.fire, self.url)
+                            self.futures[thread_id].put(self.future)
         except KeyboardInterrupt:
             error_message = f"Detected CTRL+C. Exiting."
             self.close(error_message, key_int=True)

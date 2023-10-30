@@ -7,6 +7,7 @@ send get requests to a given URL and appends the results in a list, which will l
 various calculations (based on the response times to the requests), to determine the quality of the
 communication with the web app.
 """
+
 import functools
 import os.path
 import socket
@@ -140,13 +141,15 @@ class AssessLatency:
             return socket.gethostbyname(
                 host_name)
         except socket.gaierror as e:
-            error_message = f"Unable to parse {host_name} IP address: {e}. Using hostname for ICMP (ping) requests."
+            error_message = (f"Unable to parse {host_name} IP address: {e}. "
+                             f"Using hostname for ICMP (ping) requests.")
             self.c.print(error_message, style="cyan")
-            sys.exit(1)
+            return host_name
+            # sys.exit(1)
 
     def ai_confirm(self) -> np.ndarray:
         """
-        15th to be called. \n
+        16th to be called. \n
         This method instantiates the AIControl class and returns the prediction
         from the trained model 'SQLWasp.ai'.
         :return: A NumPy array with just one value at index 0.
@@ -157,7 +160,7 @@ class AssessLatency:
 
     def clear_status_codes(self) -> None:
         """
-        14th to be called. \n
+        15th to be called. \n
         It empties all the list for each status code (key) in the dictionary.
         :return: none
         """
@@ -166,7 +169,7 @@ class AssessLatency:
 
     def _create_pandaz_table(self) -> list[list]:
         """
-        13th to be called. \n
+        14th to be called. \n
         Creates and returns a table including all the data resulted from
         the analysis.
         \n**Note**:\n* 'self.status_codes' is reset empty here.
@@ -202,7 +205,7 @@ class AssessLatency:
 
     def pandaz(self) -> pandas.DataFrame:
         """
-        12th to be called. \n
+        13th to be called. \n
         It creates a table with the analysis data similar to the report in
         'self.generate_report', then uses it to create a pandas DataFrame and
         returns it.
@@ -217,7 +220,7 @@ class AssessLatency:
 
     def write_csv_file(self) -> pandas.DataFrame:
         """
-        11th to be called. \n
+        12th to be called. \n
         Writes analysis data from a pandas DataFrame to 2 CSV files.
         One is the outfile, which is appended with new info every run,
         and it's used also to train the AI model using 'SQLWasp.ai_matrix'
@@ -234,7 +237,7 @@ class AssessLatency:
 
     def generate_report(self) -> Table:
         """
-        10th to be called. \n
+        11th to be called. \n
         Creates and returns a table, using the rich library
         and its 'Table' class. The table contains all the data
         calculated during runtime.
@@ -275,7 +278,7 @@ class AssessLatency:
 
     def validate_test(self) -> tuple[int, float]:
         """
-        9th to be called. \n
+        10th to be called. \n
         This is essentially a helper function of the 'self.pass_test'.
         It evaluates the 'self.test_results' list, and returns the
         outcome of the test, which will fail if only one of the various
@@ -299,7 +302,7 @@ class AssessLatency:
     # To be replaced with Machine Learning prediction
     def pass_test(self) -> tuple[int, float]:
         """
-        8th to be called. \n
+        9th to be called. \n
         This method evaluates the results and returns a bool response.
         1 (True), if, from the elaborated data, the communication with the
         web application is considered good enough for the intended
@@ -337,7 +340,7 @@ class AssessLatency:
 
     def calculate_std_dev(self, latencies_list, ping_values=False) -> str:
         """
-        7th to be called. \n
+        8th to be called. \n
         It uses the statistics library to calculate the standard deviation,
         which is how much a value gets distant from the average. It may be
         valuable information to understand if the web application's responses
@@ -396,7 +399,7 @@ class AssessLatency:
 
     def get_response_latency_status(self, latency_mean, threshold, ping_values=False) -> str:
         """
-        6th to be called. \n
+        7th to be called. \n
         It parses top and bottom threshold value from 'self.threshold', which represents
         the delta (+/-), that is the lowest and the highest values the response time
         must be within, in order to be considered a normal response time.
@@ -442,7 +445,7 @@ class AssessLatency:
 
     def process_latency_mean(self, latencies_list, ping_values=False) -> float | Decimal | Fraction:
         """
-        5th to be called. \n
+        6th to be called. \n
         It calculates the mean between all the time values appended from the '\\@timer'
         decorator. These are the runtimes of the 'self._assess_url' method, essentially
         the response times to our GET requests.
@@ -466,7 +469,7 @@ class AssessLatency:
 
     def process_status_codes(self) -> dict:
         """
-        4th to be called. \n
+        5th to be called. \n
         This method iterates through the response dictionaries in the 'self.responses_list',
         where all the futures are stored under their 'request id'. It extracts the response
         status code from each of them. It creates a dictionary with the found
@@ -493,7 +496,7 @@ class AssessLatency:
 
     def ping_test(self) -> float:
         """
-        3rd to be called. \n
+        4th to be called. \n
         This method pings the host's IP address and stores the response time in
         'self.ping_reply'. Then it checks if timed out (None) or it failed (False).
         :return: Ping response time (ms).
@@ -509,7 +512,7 @@ class AssessLatency:
     @timer
     def _assess_url(self) -> requests.Response:
         """
-        2nd to be called. \n
+        3rd to be called. \n
         It's a helper of the 'self.assess_url()' method.
         It takes care of sending a GET requests to the 'self.url' URL and store its response
         in the 'self.response' variable. The '@timer' decorator takes care of the response times.
@@ -524,9 +527,56 @@ class AssessLatency:
         else:
             return self.response
 
+    def _acquire_ping_response_data(self, scan_id) -> None:
+        """
+        'self.assess_url' helper function 5. \n
+        :param scan_id: The order number of the scan
+        :return: None
+        """
+        self.ping_responses_list.append({f"PingRequestId_{scan_id}": self.ping_future})
+        # List of futures for threads handling.
+        self.futures.append(self.ping_future)
+
+    def _acquire_get_response_data(self, scan_id) -> None:
+        """
+        'self.assess_url' helper function 4. \n
+        :param scan_id: The order number of the scan
+        :return: None
+        """
+        self.responses_list.append({f"RequestId_{scan_id}": self.future})
+        # Create a list of futures for handling threads, for example killing
+        # them on closure (see 'self.close').
+        self.futures.append(self.future)
+
+    def _delay(self) -> None:
+        """
+        'self.assess_url' helper function 3. \n
+        :return: None
+        """
+        if self.delay:
+            time.sleep(self.delay)
+
+    def _create_futures(self) -> None:
+        """
+        'self.assess_url' helper function 2. \n
+        :return: None
+        """
+        self.future = self.executor.submit(self._assess_url)
+        self.ping_future = self.executor.submit(self.ping_test)
+
+    def _check_future_state(self) -> None:
+        """
+        'self.assess_url' helper function 1. \n
+        :return:
+        """
+        if self.future:
+            if self.future.cancelled():
+                error_message = f"Future status cancelled: {self.future.cancelled()}"
+                self.close(error_message)
+
     def assess_url(self) -> tuple[list[dict], list[dict]]:
         """
-        1st to be called.\n
+        2nd to be called.\n
         This method creates a list of dictionaries, with request ids as keys and
         the response to the GET request as values. It does so by means of the
         'self._assess_url()' helper method, which actually takes care of sending
@@ -542,68 +592,40 @@ class AssessLatency:
                         while not queue.empty():
                             # Check if future is in a 'cancelled' state. That would typically indicate
                             # a KeyboardInterrupt. If so kill all other processes and shutdown the executor.
-                            if self.future:
-                                if self.future.cancelled():
-                                    error_message = f"Future status cancelled: {self.future.cancelled()}"
-                                    self.close(error_message)
+                            self._check_future_state()
                             # Create futures for both GET and ping requests
-                            self.future = self.executor.submit(self._assess_url)
-                            self.ping_future = self.executor.submit(self.ping_test)
-                            # Adjust the delay, the frequency of the requests.
-                            if self.delay:
-                                time.sleep(self.delay)
-                            # Create a list of dictionaries with the responses.
+                            self._create_futures()
+                            # If specified, apply the delay, the send frequency of the requests.
+                            self._delay()
+                            # Pull resource from working queue.
                             scan_id = self.queues[thread_id].get()
-                            self.responses_list.append({f"RequestId_{scan_id}": self.future})
-                            # Create a list of futures for killing threads on closure (see 'self.close').
-                            self.futures.append(self.future)
+                            # Populate a list of dictionaries with the responses from each GET scan
+                            # and a list of futures for threads handling.
+                            self._acquire_get_response_data(scan_id)
                             # Same for pings.
-                            self.ping_responses_list.append({f"PingRequestId_{scan_id}": self.ping_future})
-                            self.futures.append(self.ping_future)
+                            # Populate list of dictionaries with the responses from each ICMP scan
+                            # and a list of futures for threads handling.
+                            self._acquire_ping_response_data(scan_id)
                 return self.responses_list, self.ping_responses_list
         except KeyboardInterrupt:
             self.close("Detected CTRL+C. Bye.", keyboard_interrupt=True)
 
-    # def assess_url(self) -> tuple[list[dict], list[dict]]:
-    #     """
-    #     1st to be called.\n
-    #     This method creates a list of dictionaries, with request ids as keys and
-    #     the response to the GET request as values. It does so by means of the
-    #     'self._assess_url()' helper method, which actually takes care of sending
-    #     the requests and storing the responses in the 'self.response' instance variable.\n
-    #     Note: 'self.accuracy' is the number of requests over which the assessment will be taken.
-    #     :return: 'self.responses_list' -> [{"RequestId": requests.Response}]
-    #     """
-    #     try:
-    #         with Lock():
-    #             # Start ThreadPoolExecutor to send concurrent GET and ping requests
-    #             with ThreadPoolExecutor(max_workers=self.accuracy) as self.executor:
-    #                 for req_id, _scan in enumerate(range(self.accuracy)):
-    #                     # Check if future is in a 'cancelled' state. That would typically indicate
-    #                     # a KeyboardInterrupt. If so kill all other processes and shutdown the executor.
-    #                     if self.future:
-    #                         if self.future.cancelled():
-    #                             error_message = f"Future status cancelled: {self.future.cancelled()}"
-    #                             self.close(error_message)
-    #                     # Create futures for both GET and ping requests
-    #                     self.future = self.executor.submit(self._assess_url)
-    #                     self.ping_future = self.executor.submit(self.ping_test)
-    #                     # Adjust the delay, the frequency of the requests.
-    #                     if self.delay:
-    #                         time.sleep(self.delay)
-    #                     # Create a list of dictionaries with the responses.
-    #                     self.responses_list.append({f"RequestId_{req_id}": self.future})
-    #                     # Create a list of futures for killing threads on closure (see 'self.close').
-    #                     self.futures.append(self.future)
-    #                     # Same for pings.
-    #                     self.ping_responses_list.append({f"PingRequestId_{req_id}": self.ping_future})
-    #                     self.futures.append(self.ping_future)
-    #             return self.responses_list, self.ping_responses_list
-    #     except KeyboardInterrupt:
-    #         self.close("Detected CTRL+C. Bye.", keyboard_interrupt=True)
-
-    def create_queues(self):
+    def create_queues(self) -> None:
+        """
+        1st to be called. \n
+        This method is responsible for populating the 'self.queues' list. It does so by
+        enumerating the 'range(self.accuracy)' range, and evenly distributing resources,
+        in this case the 'scan_id' ('self.accuracy' is actually the number of scans that
+        will be performed, ie: the number of requests sent), among the queues in the
+        'self.queues' list. To evenly distribute the resources it uses a basic form of
+        round-robin distribution with the modulo operator.
+        :return: None.
+        """
         for i, scan_id in enumerate(range(self.accuracy)):
+            # The thread_id will keep cycling through the queues accessing the 'self.queues'
+            # list by index from 0 to accuracy. In this manner each thread will have its
+            # assigned queue to get resources from, without the thread being able to overlap
+            # themselves.
             thread_id = i % self.accuracy
             self.queues[thread_id].put(scan_id)
 
