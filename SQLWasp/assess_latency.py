@@ -494,6 +494,16 @@ class AssessLatency:
             # self.responses_list = []
         return self.status_codes
 
+    def _handle_ping_exceptions(self) -> None:
+        """
+        'self.ping_test' helper function 1. \n
+        :return: None
+        """
+        if self.ping_reply is None:
+            self.ping_reply = 0.0
+        if self.ping_reply is False:
+            self.ping_reply = 0.0
+
     def ping_test(self) -> float:
         """
         4th to be called. \n
@@ -502,10 +512,7 @@ class AssessLatency:
         :return: Ping response time (ms).
         """
         self.ping_reply = ping(self.host)
-        if self.ping_reply is None:
-            self.ping_reply = 0.0
-        if self.ping_reply is False:
-            self.ping_reply = 0.0
+        self._handle_ping_exceptions()
         self.ping_latencies_list.append(self.ping_reply)
         return self.ping_reply
 
