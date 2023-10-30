@@ -58,7 +58,7 @@ class AIControl:
     def load_df(self):
         try:
             self.df = pd.read_csv(self.input_data_csv_path)
-        except (ValueError):
+        except ValueError:
             pass
         else:
             self.df.dropna()
@@ -69,7 +69,7 @@ class AIControl:
         try:
             self.predictions = self.clf.predict(self.df)
             # c.print(f"Predictions: {self.predictions}")
-        except (ValueError):
+        except ValueError:
             pass
 
     def train_model(self):

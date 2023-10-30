@@ -11,14 +11,14 @@ from sklearn.model_selection import train_test_split
 
 c = Console()
 
-outfile_file_path = "data/output/assess_latency/assess_latency.csv"
+model_training_file_path = "data/output/assess_latency/assess_latency.csv"
 trained_model_file_path = "data/input/ai/net_watcher.pkl"
 
 
 class AiTrainer:
-    def __init__(self, outfile_path, trained_model_path):
+    def __init__(self, training_file_path, trained_model_path):
         self.c = Console()
-        self.outfile_path = outfile_path
+        self.outfile_path = training_file_path
         self.trained_model_path = trained_model_path
         self.df = pd.DataFrame()
         self.X = None
@@ -79,5 +79,5 @@ class AiTrainer:
 
 
 if __name__ == '__main__':
-    trainer = AiTrainer(outfile_file_path, trained_model_file_path)
+    trainer = AiTrainer(model_training_file_path, trained_model_file_path)
     trainer.run()
