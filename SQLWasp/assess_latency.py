@@ -338,6 +338,92 @@ class AssessLatency:
             self.test_results.append(False)
         return self.validate_test()
 
+    def _construct_table_record(self, record_type, latencies_list, latency_mean) -> str:
+        """
+        'self.calculate_std_dev' helper function 6. \n
+        :param record_type: GET or ICMP (ping)
+        :param latencies_list: The latency list to include in the record
+        :param latency_mean: The calculated Latency Mean, either for GET or ICMP
+        :return: Record
+        """
+        record = (
+            f"| {record_type} | {max(latencies_list):.3f} | {min(latencies_list):.3f} | {latency_mean} "
+            f"| {self.std_deviation} | {self.std_deviation_threshold} | \n")
+        return record
+
+    def _set_record_values(self, ping_values) -> tuple[str, float]:
+        """
+        'self.calculate_std_dev' helper function 5. \n
+        :param ping_values: 'ping_values' switch value
+        :return: Record Type, Latency Mean
+        """
+        if ping_values:
+            record_type = "**Ping**"
+            latency_mean = self.ping_latency_mean
+        else:
+            record_type = "**GET**"
+            latency_mean = self.latency_mean
+        return record_type, latency_mean
+
+    def _std_dev_negative_message(self, ping_values) -> tuple[str, str]:
+        """
+        'self.calculate_std_dev' helper function 4. \n
+        :param ping_values: 'ping_values' switch value
+        :return: Message, Style
+        """
+        message = ("[-] GET response time values vary significantly. "
+                   "Consider adjusting the Standard Deviation Threshold value.")
+        if ping_values:
+            message = message.replace(
+                "GET", "Ping").replace("Standard", "Ping Standard")
+        style = "dark_orange"
+        return message, style
+
+    def _std_dev_positive_message(self, ping_values) -> tuple[str, str]:
+        """
+        'self.calculate_std_dev' helper function 3. \n
+        :param ping_values: 'ping_values' switch value
+        :return: Message, Style
+        """
+        message = f"[+] GET responses latency Standard Deviation values are relatively consistent."
+        if ping_values:
+            message = message.replace(
+                "GET", "Ping")
+        style = "green"
+        return message, style
+
+    def _get_dev_and_dev_thresh(self, ping_values) -> tuple[float, float]:
+        """
+        'self.calculate_std_dev' helper function 2. \n
+        :param ping_values: 'ping_values' switch value
+        :return: Standard Deviation and Standard Deviation Threshold
+        """
+        if ping_values:
+            std_deviation = self.ping_std_deviation
+            std_deviation_threshold = self.ping_std_deviation_threshold
+        else:
+            std_deviation = self.std_deviation
+            std_deviation_threshold = self.std_deviation_threshold
+        return std_deviation, std_deviation_threshold
+
+    def _calculate_std_dev(self, latencies_list, ping_values) -> None:
+        """
+        'self.calculate_std_dev' helper function 1. \n
+        :param latencies_list: the list with the latencies of which to calculate std dev.
+        :param ping_values: 'ping_values' switch value
+        :return: None
+        """
+        try:
+            if ping_values:
+                self.ping_std_deviation = statistics.stdev(latencies_list)
+            else:
+                self.std_deviation = statistics.stdev(latencies_list)
+        except statistics.StatisticsError as e:
+            error_message = f"Unable to test latency consistency: {e}"
+            raise CheckLatencyConsistencyError(error_message) from e
+        else:
+            return
+
     def calculate_std_dev(self, latencies_list, ping_values=False) -> str:
         """
         8th to be called. \n
@@ -350,52 +436,97 @@ class AssessLatency:
         """
         # Calculate the standard deviation and set appropriate variable based
         # on 'ping_values' switch.
-        try:
-            if ping_values:
-                self.ping_std_deviation = statistics.stdev(latencies_list)
-            else:
-                self.std_deviation = statistics.stdev(latencies_list)
-        except statistics.StatisticsError as e:
-            error_message = f"Unable to test latency consistency: {e}"
-            raise CheckLatencyConsistencyError(error_message) from e
+        self._calculate_std_dev(latencies_list, ping_values)
+        # Set appropriate variables for checking against appropriate threshold based on 'ping_values' switch.
+        std_deviation, std_deviation_threshold = self._get_dev_and_dev_thresh(ping_values)
+        # Check if the standard deviation is below the threshold, and set values to
+        # create table record (used for verbosity).
+        if std_deviation < std_deviation_threshold:
+            message, style = self._std_dev_positive_message(ping_values)
         else:
-            # Set appropriate variables for checking against appropriate threshold
-            if ping_values:
-                std_deviation = self.ping_std_deviation
-                std_deviation_threshold = self.ping_std_deviation_threshold
-            else:
-                std_deviation = self.std_deviation
-                std_deviation_threshold = self.std_deviation_threshold
-            # Check if the standard deviation is below the threshold, and set values to
-            # create table record (used for verbosity).
-            if std_deviation < std_deviation_threshold:
-                message = f"[+] GET responses latency Standard Deviation values are relatively consistent."
-                if ping_values:
-                    message = message.replace(
-                        "GET", "Ping")
-                style = "green"
-            else:
-                message = ("[-] GET response time values vary significantly. "
-                           "Consider adjusting the Standard Deviation Threshold value.")
-                if ping_values:
-                    message = message.replace(
-                        "GET", "Ping").replace("Standard", "Ping Standard")
-                style = "dark_orange"
-            if ping_values:
-                record_type = "**Ping**"
-                latency_mean = self.ping_latency_mean
-            else:
-                record_type = "**GET**"
-                latency_mean = self.latency_mean
+            message, style = self._std_dev_negative_message(ping_values)
+        # Set record's values.
+        record_type, latency_mean = self._set_record_values(ping_values)
+        if self.verbose:
+            self.c.print("\n", message, style=style)
+        # Construct table record.
+        record = self._construct_table_record(record_type, latencies_list, latency_mean)
+        # Update Result Table
+        self.result_tab += record
+        return self.result_tab
 
-            if self.verbose:
-                self.c.print("\n", message, style=style)
-            # Construct table record.
-            record = (
-                f"| {record_type} | {max(latencies_list):.3f} | {min(latencies_list):.3f} | {latency_mean} "
-                f"| {self.std_deviation} | {self.std_deviation_threshold} | \n")
-            self.result_tab += record
-            return self.result_tab
+    def _update_response_latency_status_table(self, latency_mean, threshold, response_latency_status_table) -> str:
+        """
+        'self.get_response_latency_status' helper function 5. \n
+        :param latency_mean: Calculated latency mean
+        :param threshold: Threshold
+        :param response_latency_status_table: Response Latency Status Table
+        :return: Response Latency Status Table
+        """
+        record = f"| {latency_mean} | {threshold} | \n"
+        response_latency_status_table += record
+        return response_latency_status_table
+
+    def _mean_positive_response(self, ping_values) -> str:
+        """
+        'self.get_response_latency_status' helper function 4. \n
+        :param ping_values: 'ping_values' switch value
+        :return: Positive Communication quality status message
+        """
+        message = (
+            f"[+] Web application response is normal. "
+        )
+        if ping_values:
+            message = message.replace("Web application response is", "Network conditions are")
+        return message
+
+    def _mean_negative_response(self, ping_values) -> str:
+        """
+        'self.get_response_latency_status' helper function 3. \n
+        :param ping_values: 'ping_values' switch value
+        :return: Negative Communication quality status message
+        """
+        message = (
+            f"[-] Web application response is a bit slow. "
+            f"You might want to consider increasing the quality threshold value. \n"
+        )
+        if ping_values:
+            message = message.replace(
+                "Web application response", "Network"
+            ).replace(
+                "quality", "ping"
+            )
+            # message = message.replace("quality", "ping")
+        return message
+
+    def _handle_request_by_type(self, bottom_threshold, top_threshold, ping_values) -> str:
+        """
+        'self.get_response_latency_status' helper function 2. \n
+        :param bottom_threshold: Bottom threshold value from 'self._get_threshold_frame'
+        :param top_threshold: Top threshold value from 'self._get_threshold_frame'
+        :param ping_values: 'ping_values' switch value
+        :return: Response Latency Status Table
+        """
+        if ping_values:
+            self.ping_bottom_threshold = bottom_threshold
+            self.ping_top_threshold = top_threshold
+            response_latency_status_table = self.ping_response_latency_status_tab
+        else:
+            self.bottom_threshold = bottom_threshold
+            self.top_threshold = top_threshold
+            response_latency_status_table = self.response_latency_status_tab
+        return response_latency_status_table
+
+    def _get_threshold_frame(self, latency_mean, threshold) -> tuple[float, float]:
+        """
+        'self.get_response_latency_status' helper function 1. \n
+        :param latency_mean:
+        :param threshold:
+        :return: Top and Bottom Thresholds values
+        """
+        bottom_threshold = latency_mean - threshold
+        top_threshold = latency_mean + threshold
+        return bottom_threshold, top_threshold
 
     def get_response_latency_status(self, latency_mean, threshold, ping_values=False) -> str:
         """
@@ -406,42 +537,52 @@ class AssessLatency:
         :return: 'self.response_latency_status_table': | Average Response Time | Current Threshold Value |.
         """
         # Calculate bottom and top threshold
-        bottom_threshold = latency_mean - threshold
-        top_threshold = latency_mean + threshold
+        bottom_threshold, top_threshold = self._get_threshold_frame(latency_mean, threshold)
         # Set variables based on 'ping_values' flag, and sets the appropriate output table
         # for verbosity (allows to print a rich Markdown table)
-        if ping_values:
-            self.ping_bottom_threshold = bottom_threshold
-            self.ping_top_threshold = top_threshold
-            response_latency_status_table = self.ping_response_latency_status_tab
-        else:
-            self.bottom_threshold = bottom_threshold
-            self.top_threshold = top_threshold
-            response_latency_status_table = self.response_latency_status_tab
+        response_latency_status_table = self._handle_request_by_type(bottom_threshold, top_threshold, ping_values)
         # Check that latency mean inside specified threshold values, and prints
         # appropriate message when verbose.
         if not bottom_threshold < latency_mean <= top_threshold:
-            message = (
-                f"[-] Web application response is a bit slow. "
-                f"You might want to consider increasing the quality threshold value. \n"
-            )
-            if ping_values:
-                message = message.replace("Web application response", "Network")
-                message = message.replace("quality", "ping")
+            message = self._mean_negative_response(ping_values)
             if self.verbose:
                 self.c.print(Markdown(message), style="dark_orange")
         else:
-            message = (
-                f"[+] Web application response is normal. "
-            )
-            if ping_values:
-                message = message.replace("Web application response is", "Network conditions are")
+            message = self._mean_positive_response(ping_values)
             if self.verbose:
                 self.c.print(Markdown(message), style="green")
         # Create table record, append it and return table based on 'ping_values' switch.
-        record = f"| {latency_mean} | {threshold} | \n"
-        response_latency_status_table += record
+        response_latency_status_table = self._update_response_latency_status_table(
+            latency_mean, threshold, response_latency_status_table
+        )
         return response_latency_status_table
+
+    def _handle_mean_error_messages(self, e, ping_values) -> str:
+        """
+        'self.process_latency_mean' helper function 2. \n
+        :param e: Error message from exception
+        :param ping_values: 'ping_value' switch value
+        :return:
+        """
+        if ping_values:
+            error_message = f"Unable to calculate ping responses times mean for url '{self.url}': {e}"
+        else:
+            error_message = f"Unable to calculate GET responses times mean for url '{self.url}': {e}"
+        return error_message
+
+    def _calculate_mean(self, latencies_list, ping_values) -> float:
+        """
+        'self.process_latency_mean' helper function 1. \n
+        :param latencies_list: The list of latencies of which to calculate the mean.
+        :param ping_values:
+        :return:
+        """
+        if ping_values:
+            self.ping_latency_mean = statistics.mean(latencies_list)
+            return self.ping_latency_mean
+        else:
+            self.latency_mean = statistics.mean(latencies_list)
+            return self.latency_mean
 
     def process_latency_mean(self, latencies_list, ping_values=False) -> float | Decimal | Fraction:
         """
@@ -452,20 +593,33 @@ class AssessLatency:
         :return: 'self.latency_mean'. The mean of the time values in 'self.latencies_list'.
         """
         try:
-            # Sets a different variable based on the 'ping_values' switch.
-            if ping_values:
-                self.ping_latency_mean = statistics.mean(latencies_list)
-                return self.ping_latency_mean
-            else:
-                self.latency_mean = statistics.mean(latencies_list)
-                return self.latency_mean
+            # Calculate mean and assign its value to a different variable
+            # based on the 'ping_values' switch.
+            return self._calculate_mean(latencies_list, ping_values)
         except statistics.StatisticsError as e:
-            if ping_values:
-                error_message = f"Unable to calculate ping responses times mean for url '{self.url}': {e}"
-            else:
-                error_message = f"Unable to calculate GET responses times mean for url '{self.url}': {e}"
+            error_message = self._handle_mean_error_messages(e, ping_values)
             self.c.print(error_message, style="yellow3")
             sys.exit(1)
+
+    def _get_response(self, response) -> str:
+        """
+        'self.process_status_codes' helper function 1. \n
+        :param response: The future you need the response from
+        :return:
+        """
+        try:
+            # Parse status code.
+            status_code = response.status_code
+        except AttributeError as e:
+            self.c.print(
+                f"Could not process status code for URL: '{self.url}': {e} \nSkipping..",
+                style="dark_orange"
+            )
+            pass
+        else:
+            # Parse and return the status code id.
+            status_code_id = f"{str(status_code)[0]}xx"
+            return status_code_id
 
     def process_status_codes(self) -> dict:
         """
@@ -476,22 +630,16 @@ class AssessLatency:
         response codes as keys, and a list with each found response of that code.
         :return: 'self.status_codes': dict of received responses status codes.
         """
-
+        # Iterate through the responses list dictionaries.
         for req_dict in self.responses_list:
             for request_id, future in req_dict.items():
+                # Parse the response from the future
                 response: requests.Response = future.result()
-                try:
-                    status_code = response.status_code
-                except AttributeError as e:
-                    self.c.print(
-                        f"Could not process status code for URL: '{self.url}': {e} \nSkipping..",
-                        style="dark_orange"
-                    )
-                    pass
-                else:
-                    status_code_id = f"{str(status_code)[0]}xx"
+                # Parse the status code id and append the response to the list of
+                # the corresponding status code category.
+                status_code_id = self._get_response(response)
+                if status_code_id:
                     self.status_codes[status_code_id].append([response, self.url])
-            # self.responses_list = []
         return self.status_codes
 
     def _handle_ping_exceptions(self) -> None:

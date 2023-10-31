@@ -308,7 +308,8 @@ def validate_max_threads(ctx, param, value):
     "-a", "--accuracy",
     help="The number of GET requests that will be sent to perform the analysis. "
          "The highest the number, the slowest the test, the more accurate the response.",
-    default=random.randrange(2, 10, 1),
+    default=10,
+    # default=random.randrange(2, 10, 1),
     show_default=True,
     required=True,
     type=int
@@ -317,7 +318,8 @@ def validate_max_threads(ctx, param, value):
     "-t", "--threshold",
     help="The delta (+/-). Determines the lowest and the highest values the response time must be within, "
          "in order to be considered a 'normal' response time (ie: <average_response_time> +/- <threshold>).",
-    default=random.uniform(0.0, 6.0),
+    default=0.1,
+    # default=random.uniform(0.0, 6.0),
     show_default=True,
     required=True,
     type=float
@@ -326,7 +328,8 @@ def validate_max_threads(ctx, param, value):
     "-T", "--ping-threshold", "ping_threshold",
     help="The delta (+/-). Determines the lowest and the highest values the ping response time must be within, "
          "in order to be considered a 'normal' response time (ie: <ping_average_response_time> +/- <threshold>).",
-    default=random.uniform(0.0, 6.0),
+    default=0.1,
+    # default=random.uniform(0.0, 6.0),
     show_default=True,
     required=True,
     type=float
@@ -335,7 +338,8 @@ def validate_max_threads(ctx, param, value):
     "-x", "--std-deviation-threshold", "std_deviation_threshold",
     help="The value over which the standard deviation should not go beyond"
          "without an alert being triggered.",
-    default=random.uniform(0.0, 6.0),
+    default=0.1,
+    # default=random.uniform(0.0, 6.0),
     show_default=True,
     required=True,
     type=float
@@ -344,7 +348,8 @@ def validate_max_threads(ctx, param, value):
     "-y", "--ping-std-deviation-threshold", "ping_std_deviation_threshold",
     help="The value over which the ping standard deviation should not go beyond"
          "without an alert being triggered.",
-    default=random.uniform(0.0, 6.0),
+    default=0.1,
+    # default=random.uniform(0.0, 6.0),
     show_default=True,
     required=True,
     type=float
@@ -352,7 +357,8 @@ def validate_max_threads(ctx, param, value):
 @click.option(
     "-D", "--delay",
     help="The seconds to wait in between requests.",
-    default=random.uniform(0.0, 2.0),
+    default=0.3,
+    # default=random.uniform(0.0, 2.0),
     show_default=True,
     required=True,
     type=float
